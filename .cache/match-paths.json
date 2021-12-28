@@ -1,0 +1,10 @@
+[
+    {
+        "path": "/en/preview/",
+        "matchPath": "/:locale/preview/:slug"
+    },
+    {
+        "path": "/fr/preview/",
+        "matchPath": "/:locale/preview/:slug"
+    }
+]
