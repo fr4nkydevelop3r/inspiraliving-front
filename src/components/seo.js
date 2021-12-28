@@ -44,7 +44,7 @@ const SEO = ({ seo, global }) => {
     if (fullSeo.shareImage) {
       const imageUrl = process.env.GATSBY_STRAPI_URL
         ? fullSeo.shareImage.publicURL
-        : `http://localhost:8000${fullSeo.shareImage.publicURL}`
+        : `https://strapi-4jqq.onrender.com${fullSeo.shareImage.publicURL}`
 
       tags.push(
         {

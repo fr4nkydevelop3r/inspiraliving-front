@@ -1,6 +1,6 @@
 export function getStrapiURL(path) {
   return `${
-    process.env.GATSBY_STRAPI_URL || 'http://localhost:1337'
+    process.env.GATSBY_STRAPI_URL || "https://strapi-4jqq.onrender.com"
   }${path}`
 }
 
@@ -9,7 +9,7 @@ export function getStrapiURL(path) {
 export async function fetchAPI(path, options = {}) {
   const defaultOptions = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   }
   const mergedOptions = {

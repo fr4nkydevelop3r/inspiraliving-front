@@ -58,9 +58,32 @@ exports.createPages = async ({ graphql, actions }) => {
     return data.allStrapiPage.nodes
   })
 
+  const localeBlogPosts = locales.map(async locale => {
+    const { data } = await graphql(
+      `
+        query pagesQuery($locale: String!) {
+          allStrapiArticle(filter: { locale: { eq: $locale } }) {
+            nodes {
+              slug
+              id
+              locale
+            }
+          }
+        }
+      `,
+      { locale: locale }
+    )
+
+    return data.allStrapiArticle.nodes
+  })
+
   const pages = await (await Promise.all(localePages)).flat()
+  const articles = await (await Promise.all(localeBlogPosts)).flat()
+  console.log(pages)
+  console.log(articles)
 
   const PageTemplate = path.resolve("./src/templates/page.js")
+  const BlogPostTemplate = path.resolve("./src/templates/blogPost.js")
 
   // Create all non-root pages based on Strapi data
   pages.forEach(page => {
@@ -92,7 +115,40 @@ exports.createPages = async ({ graphql, actions }) => {
     })
   })
 
-  const PreviewPage = path.resolve("./src/templates/preview.js")
+  // Create all articles based on Strapi data
+  articles.forEach(page => {
+    const slug = page.slug ? page.slug : ""
+    // The default locale has no prefix
+    // The root of all other locales should be the locale code (i.e. /fr)
+    const localePrefix =
+      page.locale === defaultLocale || locales.includes(page.slug)
+        ? ""
+        : page.locale
+
+    const context = {
+      slug: page.slug,
+      id: page.id,
+      locale: page.locale,
+      locales,
+      defaultLocale,
+    }
+
+    const localizedPaths = getLocalizedPaths(context)
+
+    createPage({
+      path: `${localePrefix}/${slug}`,
+      component: BlogPostTemplate,
+      context: {
+        ...context,
+        localizedPaths,
+      },
+    })
+  })
+}
+
+//blog pages
+
+/*const PreviewPage = path.resolve("./src/templates/preview.js")
 
   locales.forEach(locale => {
     const params = {
@@ -112,9 +168,10 @@ exports.createPages = async ({ graphql, actions }) => {
       actions: { createPage },
     })
   })
-}
+} 
+*/
 
-onCreatePage = async ({ page, actions }) => {
+/*onCreatePage = async ({ page, actions }) => {
   const { createPage } = actions
   if (page.path.includes("preview")) {
     // page.matchPath is a special key that's used for matching pages
@@ -123,4 +180,4 @@ onCreatePage = async ({ page, actions }) => {
     // Update the page.
     createPage(page)
   }
-}
+}*/
