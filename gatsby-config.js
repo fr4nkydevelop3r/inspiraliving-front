@@ -16,7 +16,7 @@ module.exports = {
     }`,
     description: `A Strapi+Gatsby corporate starter`,
     author: `Strapi`,
-    languages: { defaultLocale: "en", locales: ["en", "fr"] },
+    languages: { defaultLocale: "en", locales: ["en", "es"] },
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -89,7 +89,7 @@ module.exports = {
             name: "global",
             api: {
               qs: {
-                _locale: "fr",
+                _locale: "es",
               },
             },
           },

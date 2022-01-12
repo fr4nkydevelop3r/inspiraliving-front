@@ -22,7 +22,7 @@ const Navbar = ({ navbar, pageContext }) => {
   return (
     <>
       {/* The actual navbar */}
-      <nav className="border-gray-200 border-b-2 py-6 sm:py-2">
+      <nav className=" bg-black py-6 sm:py-2">
         <div className="container flex flex-row items-center justify-between">
           {/* Content aligned to the left */}
           <div className="flex flex-row items-center">
@@ -37,7 +37,7 @@ const Navbar = ({ navbar, pageContext }) => {
               />
             </Link>
             {/* List of links on desktop */}
-            <ul className="hidden list-none md:flex flex-row gap-4 items-baseline ml-10">
+            <ul className="hidden list-none md:flex flex-row gap-4 text-white items-baseline ml-10">
               {navbar.links.map(navLink => (
                 <li key={navLink.id}>
                   <CustomLink
@@ -51,7 +51,7 @@ const Navbar = ({ navbar, pageContext }) => {
                       })}`,
                     }}
                   >
-                    <div className="hover:text-gray-900 px-2 py-1">
+                    <div className="hover:text-primary-600 px-2 py-1">
                       {navLink.text}
                     </div>
                   </CustomLink>
@@ -69,7 +69,7 @@ const Navbar = ({ navbar, pageContext }) => {
             {/* Hamburger menu on mobile */}
             <button
               onClick={() => setMobileMenuIsShown(true)}
-              className="p-1 block md:hidden"
+              className="p-1 text-white block md:hidden"
             >
               <MdMenu className="h-8 w-auto" />
             </button>

@@ -1,17 +1,16 @@
 import React from "react"
-import PropTypes from "prop-types";
-import { getStrapiMedia } from "@/utils/media";
-import { mediaPropTypes } from "@/utils/types";
+import { getStrapiMedia } from "@/utils/media"
+import { mediaPropTypes } from "@/utils/types"
 
 const Video = ({
   media,
   poster,
   className,
   controls = true,
-  autoPlay = false,
+  autoPlay = true,
 }) => {
-  const fullVideoUrl = getStrapiMedia(media.url);
-  const fullPosterUrl = getStrapiMedia(poster?.url);
+  const fullVideoUrl = getStrapiMedia(media.url)
+  const fullPosterUrl = getStrapiMedia(poster?.url)
 
   return (
     // TODO: Videos must have captions track
@@ -19,20 +18,14 @@ const Video = ({
     <video
       className={className}
       poster={fullPosterUrl}
-      controls={controls}
       autoPlay={autoPlay}
+      className="absolute z-10 w-auto min-w-full min-h-full max-w-none"
+      loop
+      muted
     >
       <source src={fullVideoUrl} type={media.mime} />
     </video>
-  );
-};
+  )
+}
 
-Video.propTypes = {
-  media: mediaPropTypes.isRequired,
-  poster: mediaPropTypes,
-  className: PropTypes.string,
-  controls: PropTypes.bool,
-  autoPlay: PropTypes.bool,
-};
-
-export default Video;
+export default Video

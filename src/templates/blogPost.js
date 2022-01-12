@@ -2,6 +2,8 @@ import React from "react"
 import { graphql } from "gatsby"
 import Layout from "@/components/layout"
 import SEO from "@/components/seo"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 const BlogPost = ({ data, pageContext }) => {
   const {
@@ -13,7 +15,10 @@ const BlogPost = ({ data, pageContext }) => {
   } = data.strapiArticle
   const global = data.strapiGlobal
 
-  console.log(global)
+  console.log(slug)
+  console.log(description)
+  console.log(content)
+  console.log(localizations)
 
   const metadata = {
     metaDescription: "This is our Blog",
@@ -24,9 +29,8 @@ const BlogPost = ({ data, pageContext }) => {
     <>
       <SEO seo={metadata} global={global} />
       <Layout global={global} pageContext={{ ...pageContext, localizations }}>
-        {title}
-        {description}
-        {content}
+        {/**title */}
+        <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} />
       </Layout>
     </>
   )
@@ -42,18 +46,9 @@ export const query = graphql`
       }
     }
     footer {
-      id
-      columns {
-        id
-        links {
-          id
-          newTab
-          text
-          url
-        }
-        title
-      }
-      id
+      ctatext
+      description
+      rights
       logo {
         alternativeText
         localFile {
@@ -62,7 +57,12 @@ export const query = graphql`
           }
         }
       }
-      smallText
+      id
+      button {
+        id
+        text
+        type
+      }
     }
     id
     metaTitleSuffix
@@ -97,11 +97,6 @@ export const query = graphql`
           }
         }
       }
-    }
-    notificationBanner {
-      id
-      text
-      type
     }
   }
 

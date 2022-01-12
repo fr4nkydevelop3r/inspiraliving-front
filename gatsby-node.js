@@ -1,5 +1,6 @@
 const path = require("path")
 const { getLocalizedPaths } = require("./src/utils/localize")
+const { paginate } = require("gatsby-awesome-pagination")
 
 exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
@@ -77,16 +78,51 @@ exports.createPages = async ({ graphql, actions }) => {
     return data.allStrapiArticle.nodes
   })
 
+  const localeCategories = locales.map(async locale => {
+    const { data } = await graphql(
+      `
+        query categoriesQuery($locale: String!) {
+          allStrapiCategory(filter: { locale: { eq: $locale } }) {
+            nodes {
+              name
+              slug
+              locale
+              id
+              articles {
+                image {
+                  localFile {
+                    childImageSharp {
+                      gatsbyImageData
+                    }
+                  }
+                }
+                description
+                category
+                id
+                title
+                writer
+                slug
+              }
+            }
+          }
+        }
+      `,
+      { locale: locale }
+    )
+
+    return data.allStrapiCategory.nodes
+  })
+
   const pages = await (await Promise.all(localePages)).flat()
   const articles = await (await Promise.all(localeBlogPosts)).flat()
-  console.log(pages)
-  console.log(articles)
+  const categories = await (await Promise.all(localeCategories)).flat()
 
   const PageTemplate = path.resolve("./src/templates/page.js")
   const BlogPostTemplate = path.resolve("./src/templates/blogPost.js")
+  const CategoryTemplate = path.resolve("./src/templates/category.js")
 
   // Create all non-root pages based on Strapi data
-  pages.forEach(page => {
+  pages.forEach(async page => {
     const slug = page.slug ? page.slug : ""
     // The default locale has no prefix
     // The root of all other locales should be the locale code (i.e. /fr)
@@ -105,14 +141,28 @@ exports.createPages = async ({ graphql, actions }) => {
 
     const localizedPaths = getLocalizedPaths(context)
 
-    createPage({
-      path: `${localePrefix}/${slug}`,
-      component: PageTemplate,
-      context: {
-        ...context,
-        localizedPaths,
-      },
-    })
+    // component: page.slug === "reflections" ? ReflectionsTemplate : PageTemplate,
+
+    page.slug === "reflections"
+      ? paginate({
+          pathPrefix: `${localePrefix}/${slug}`,
+          createPage,
+          items: articles,
+          itemsPerPage: 8,
+          context: {
+            ...context,
+            localizedPaths,
+          },
+          component: path.resolve("src/templates/reflections.js"),
+        })
+      : createPage({
+          path: `${localePrefix}/${slug}`,
+          component: PageTemplate,
+          context: {
+            ...context,
+            localizedPaths,
+          },
+        })
   })
 
   // Create all articles based on Strapi data
@@ -138,6 +188,38 @@ exports.createPages = async ({ graphql, actions }) => {
     createPage({
       path: `${localePrefix}/${slug}`,
       component: BlogPostTemplate,
+      context: {
+        ...context,
+        localizedPaths,
+      },
+    })
+  })
+
+  //categories pages
+
+  categories.forEach(page => {
+    console.log(page)
+    const slug = page.slug ? page.slug : ""
+    // The default locale has no prefix
+    // The root of all other locales should be the locale code (i.e. /fr)
+    const localePrefix =
+      page.locale === defaultLocale || locales.includes(page.slug)
+        ? ""
+        : page.locale
+
+    const context = {
+      slug: page.slug,
+      id: page.id,
+      locale: page.locale,
+      locales,
+      defaultLocale,
+    }
+
+    const localizedPaths = getLocalizedPaths(context)
+
+    createPage({
+      path: `${localePrefix}/${slug}`,
+      component: CategoryTemplate,
       context: {
         ...context,
         localizedPaths,

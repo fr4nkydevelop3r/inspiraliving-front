@@ -28,30 +28,23 @@ export const query = graphql`
       }
     }
     footer {
-      id
-      columns {
-        id
-        links {
-          id
-          newTab
-          text
-          url
-        }
-        title
-      }
-      id
+      ctatext
+      description
+      rights
       logo {
         alternativeText
         localFile {
           childImageSharp {
-            gatsbyImageData(
-              placeholder: BLURRED
-              formats: [AUTO, WEBP, AVIF]
-            )
+            gatsbyImageData(placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
           }
         }
       }
-      smallText
+      id
+      button {
+        id
+        text
+        type
+      }
     }
     id
     metaTitleSuffix
@@ -82,18 +75,10 @@ export const query = graphql`
       logo {
         localFile {
           childImageSharp {
-            gatsbyImageData(
-              placeholder: BLURRED
-              formats: [AUTO, WEBP, AVIF]
-            )
+            gatsbyImageData(placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
           }
         }
       }
-    }
-    notificationBanner {
-      id
-      text
-      type
     }
   }
 

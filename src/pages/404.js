@@ -14,6 +14,8 @@ const NotFoundPage = ({ data }) => {
     },
   } = data
 
+  console.log(locales)
+
   return (
     <>
       <SEO seo={{ title: "404: Not found" }} global={strapiGlobal} />

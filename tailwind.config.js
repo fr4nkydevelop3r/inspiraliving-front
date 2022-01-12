@@ -1,11 +1,21 @@
-const { colors } = require(`tailwindcss/defaultTheme`);
+const { colors } = require(`tailwindcss/defaultTheme`)
+
+console.log(colors)
 
 module.exports = {
   purge: ["./src/components/**/*.js", "./src/pages/**/*.js"],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['"Rock Salt"', "cursive"],
+        body: ['"Roboto Condensed"', "sans-serif"],
+      },
       colors: {
-        primary: colors.indigo,
+        primary: colors.purple,
+        matrix: "#00FF41",
+        silver: "c8cccf",
+        white: "#ffffff",
+        black: "#161717",
       },
       container: {
         center: true,
@@ -23,4 +33,4 @@ module.exports = {
     },
   },
   plugins: [require("@tailwindcss/typography")],
-};
+}

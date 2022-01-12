@@ -84,6 +84,10 @@ const SEO = ({ seo, global }) => {
           rel: "icon",
           href: fullSeo.favicon.localFile.publicURL,
         },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css?family=Staatliches",
+        },
       ]}
     />
   )
