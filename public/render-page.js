@@ -7133,6 +7133,135 @@ exports.shallowCompare = shallowCompare;
 
 /***/ }),
 
+/***/ "./node_modules/any-base/index.js":
+/*!****************************************!*\
+  !*** ./node_modules/any-base/index.js ***!
+  \****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var Converter = __webpack_require__(/*! ./src/converter */ "./node_modules/any-base/src/converter.js");
+
+/**
+ * Function get source and destination alphabet and return convert function
+ *
+ * @param {string|Array} srcAlphabet
+ * @param {string|Array} dstAlphabet
+ *
+ * @returns {function(number|Array)}
+ */
+function anyBase(srcAlphabet, dstAlphabet) {
+    var converter = new Converter(srcAlphabet, dstAlphabet);
+    /**
+     * Convert function
+     *
+     * @param {string|Array} number
+     *
+     * @return {string|Array} number
+     */
+    return function (number) {
+        return converter.convert(number);
+    }
+};
+
+anyBase.BIN = '01';
+anyBase.OCT = '01234567';
+anyBase.DEC = '0123456789';
+anyBase.HEX = '0123456789abcdef';
+
+module.exports = anyBase;
+
+/***/ }),
+
+/***/ "./node_modules/any-base/src/converter.js":
+/*!************************************************!*\
+  !*** ./node_modules/any-base/src/converter.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Converter
+ *
+ * @param {string|Array} srcAlphabet
+ * @param {string|Array} dstAlphabet
+ * @constructor
+ */
+function Converter(srcAlphabet, dstAlphabet) {
+    if (!srcAlphabet || !dstAlphabet || !srcAlphabet.length || !dstAlphabet.length) {
+        throw new Error('Bad alphabet');
+    }
+    this.srcAlphabet = srcAlphabet;
+    this.dstAlphabet = dstAlphabet;
+}
+
+/**
+ * Convert number from source alphabet to destination alphabet
+ *
+ * @param {string|Array} number - number represented as a string or array of points
+ *
+ * @returns {string|Array}
+ */
+Converter.prototype.convert = function(number) {
+    var i, divide, newlen,
+    numberMap = {},
+    fromBase = this.srcAlphabet.length,
+    toBase = this.dstAlphabet.length,
+    length = number.length,
+    result = typeof number === 'string' ? '' : [];
+
+    if (!this.isValid(number)) {
+        throw new Error('Number "' + number + '" contains of non-alphabetic digits (' + this.srcAlphabet + ')');
+    }
+
+    if (this.srcAlphabet === this.dstAlphabet) {
+        return number;
+    }
+
+    for (i = 0; i < length; i++) {
+        numberMap[i] = this.srcAlphabet.indexOf(number[i]);
+    }
+    do {
+        divide = 0;
+        newlen = 0;
+        for (i = 0; i < length; i++) {
+            divide = divide * fromBase + numberMap[i];
+            if (divide >= toBase) {
+                numberMap[newlen++] = parseInt(divide / toBase, 10);
+                divide = divide % toBase;
+            } else if (newlen > 0) {
+                numberMap[newlen++] = 0;
+            }
+        }
+        length = newlen;
+        result = this.dstAlphabet.slice(divide, divide + 1).concat(result);
+    } while (newlen !== 0);
+
+    return result;
+};
+
+/**
+ * Valid number with source alphabet
+ *
+ * @param {number} number
+ *
+ * @returns {boolean}
+ */
+Converter.prototype.isValid = function(number) {
+    var i = 0;
+    for (; i < number.length; ++i) {
+        if (this.srcAlphabet.indexOf(number[i]) === -1) {
+            return false;
+        }
+    }
+    return true;
+};
+
+module.exports = Converter;
+
+/***/ }),
+
 /***/ "./node_modules/camelcase/index.js":
 /*!*****************************************!*\
   !*** ./node_modules/camelcase/index.js ***!
@@ -12466,6 +12595,90 @@ module.exports = function extend() {
 
 /***/ }),
 
+/***/ "./node_modules/filter-invalid-dom-props/dist/index.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/filter-invalid-dom-props/dist/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+	value: true
+}));
+exports.default = filterInvalidDOMProps;
+
+var _htmlAttributes = __webpack_require__(/*! html-attributes */ "./node_modules/html-attributes/lib/html-attributes.js");
+
+var _htmlAttributes2 = _interopRequireDefault(_htmlAttributes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var eventProps = {
+	onCopy: true,
+	onCut: true,
+	onPaste: true,
+	onLoad: true,
+	onError: true,
+	onWheel: true,
+	onScroll: true,
+	onCompositionEnd: true,
+	onCompositionStart: true,
+	onCompositionUpdate: true,
+	onKeyDown: true,
+	onKeyPress: true,
+	onKeyUp: true,
+	onFocus: true,
+	onBlur: true,
+	onChange: true,
+	onInput: true,
+	onSubmit: true,
+	onClick: true,
+	onContextMenu: true,
+	onDoubleClick: true,
+	onDrag: true,
+	onDragEnd: true,
+	onDragEnter: true,
+	onDragExit: true,
+	onDragLeave: true,
+	onDragOver: true,
+	onDragStart: true,
+	onDrop: true,
+	onMouseDown: true,
+	onMouseEnter: true,
+	onMouseLeave: true,
+	onMouseMove: true,
+	onMouseOut: true,
+	onMouseOver: true,
+	onMouseUp: true,
+	onSelect: true,
+	onTouchCancel: true,
+	onTouchEnd: true,
+	onTouchMove: true,
+	onTouchStart: true,
+	onAnimationStart: true,
+	onAnimationEnd: true,
+	onAnimationIteration: true,
+	onTransitionEnd: true
+};
+
+function isValidDOMProp(prop) {
+	return eventProps[prop] || _htmlAttributes2.default[prop] || /^(data|aria)-/.test(prop);
+}
+
+function filterInvalidDOMProps(props) {
+	var domProps = {};
+	for (var prop in props) {
+		if (props.hasOwnProperty(prop) && isValidDOMProp(prop)) {
+			domProps[prop] = props[prop];
+		}
+	}
+	return domProps;
+}
+
+/***/ }),
+
 /***/ "./node_modules/formik/dist/formik.esm.js":
 /*!************************************************!*\
   !*** ./node_modules/formik/dist/formik.esm.js ***!
@@ -16788,6 +17001,1840 @@ function stripPrefix(str, prefix = ``) {
 
 /***/ }),
 
+/***/ "./node_modules/gatsby-background-image/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/gatsby-background-image/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+exports.__esModule = true;
+exports.default = void 0;
+
+var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
+
+var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "./node_modules/@babel/runtime/helpers/extends.js"));
+
+var _assertThisInitialized2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/assertThisInitialized.js"));
+
+var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "./node_modules/@babel/runtime/helpers/inheritsLoose.js"));
+
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
+
+var _BackgroundUtils = _interopRequireDefault(__webpack_require__(/*! ./lib/BackgroundUtils */ "./node_modules/gatsby-background-image/lib/BackgroundUtils.js"));
+
+var _HelperUtils = __webpack_require__(/*! ./lib/HelperUtils */ "./node_modules/gatsby-background-image/lib/HelperUtils.js");
+
+var _ImageUtils = __webpack_require__(/*! ./lib/ImageUtils */ "./node_modules/gatsby-background-image/lib/ImageUtils.js");
+
+var _ImageCache = __webpack_require__(/*! ./lib/ImageCache */ "./node_modules/gatsby-background-image/lib/ImageCache.js");
+
+var _ImageRef = __webpack_require__(/*! ./lib/ImageRef */ "./node_modules/gatsby-background-image/lib/ImageRef.js");
+
+var _ImageHandling = __webpack_require__(/*! ./lib/ImageHandling */ "./node_modules/gatsby-background-image/lib/ImageHandling.js");
+
+var _StyleUtils = __webpack_require__(/*! ./lib/StyleUtils */ "./node_modules/gatsby-background-image/lib/StyleUtils.js");
+
+var _StyleCreation = __webpack_require__(/*! ./lib/StyleCreation */ "./node_modules/gatsby-background-image/lib/StyleCreation.js");
+
+var _IntersectionObserverUtils = __webpack_require__(/*! ./lib/IntersectionObserverUtils */ "./node_modules/gatsby-background-image/lib/IntersectionObserverUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./lib/SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var _excluded = ["className", "style", "fluid", "fixed", "backgroundColor", "durationFadeIn", "Tag", "children", "keepStatic"];
+
+var BackgroundImage = function (_React$Component) {
+  (0, _inheritsLoose2.default)(BackgroundImage, _React$Component);
+
+  function BackgroundImage(props) {
+    var _this;
+
+    _this = _React$Component.call(this, props) || this;
+
+    _this.intersectionListener = function () {
+      var imageInCache = (0, _ImageCache.inImageCache)(_this.props);
+
+      if (!_this.state.isVisible && typeof _this.props.onStartLoad === "function") {
+        _this.props.onStartLoad({
+          wasCached: imageInCache
+        });
+      }
+
+      _this.imageRef = (0, _ImageRef.activatePictureRef)(_this.imageRef, _this.props, _this.selfRef);
+
+      _this.setState(function (state) {
+        return {
+          isVisible: true,
+          imageState: state.imageState + 1
+        };
+      }, function () {
+        _this.setState(function (state) {
+          return {
+            imgLoaded: imageInCache,
+            imgCached: (0, _ImageRef.hasActivatedPictureRefs)(_this.imageRef),
+            imageState: state.imageState + 1
+          };
+        });
+      });
+    };
+
+    var convertedProps = (0, _HelperUtils.convertProps)(props);
+    var isVisible = true;
+    var imgLoaded = false;
+    var IOSupported = false;
+    var fadeIn = convertedProps.fadeIn;
+    var seenBefore = (0, _ImageCache.inImageCache)(convertedProps);
+
+    if (!seenBefore && (0, _SimpleUtils.isBrowser)() && window.IntersectionObserver) {
+      isVisible = false;
+      IOSupported = true;
+    }
+
+    if (!(0, _SimpleUtils.isBrowser)()) {
+      isVisible = false;
+    }
+
+    if (convertedProps.critical) {
+      isVisible = true;
+      IOSupported = false;
+    }
+
+    var hasNoScript = !(convertedProps.critical && !fadeIn) && !(0, _SimpleUtils.isBrowser)();
+    var imageState = 0;
+
+    var _fixClassName = (0, _StyleUtils.fixClassName)(convertedProps),
+        currentClassNames = _fixClassName[0];
+
+    _this.backgroundStyles = (0, _StyleUtils.presetBackgroundStyles)((0, _BackgroundUtils.default)(convertedProps.className));
+    _this.handleImageLoaded = _this.handleImageLoaded.bind((0, _assertThisInitialized2.default)(_this));
+    _this.handleRef = _this.handleRef.bind((0, _assertThisInitialized2.default)(_this));
+    _this.imageRef = (0, _ImageRef.createPictureRef)((0, _extends2.default)({}, convertedProps, {
+      isVisible: isVisible
+    }), _this.handleImageLoaded);
+    _this.selfRef = null;
+    _this.state = {
+      isVisible: isVisible,
+      imgLoaded: imgLoaded,
+      IOSupported: IOSupported,
+      fadeIn: fadeIn,
+      hasNoScript: hasNoScript,
+      seenBefore: seenBefore,
+      imageState: imageState,
+      currentClassNames: currentClassNames
+    };
+    return _this;
+  }
+
+  var _proto = BackgroundImage.prototype;
+
+  _proto.componentDidMount = function componentDidMount() {
+    this.backgroundStyles = (0, _StyleUtils.presetBackgroundStyles)((0, _BackgroundUtils.default)(this.props.className));
+
+    if (this.state.isVisible && typeof this.props.onStartLoad === "function") {
+      this.props.onStartLoad({
+        wasCached: (0, _ImageCache.inImageCache)(this.props)
+      });
+    }
+
+    if (this.props.critical || this.state.seenBefore) {
+      if ((0, _ImageRef.imageReferenceCompleted)(this.imageRef, this.props)) {
+        this.handleImageLoaded();
+      }
+    }
+
+    var _fixClassName2 = (0, _StyleUtils.fixClassName)(this.props),
+        currentClassNames = _fixClassName2[0];
+
+    this.setState({
+      currentClassNames: currentClassNames
+    });
+  };
+
+  _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
+    var _this2 = this;
+
+    if ((0, _ImageUtils.imagePropsChanged)(this.props, prevProps)) {
+      var convertedProps = (0, _HelperUtils.convertProps)(this.props);
+      var imageInCache = (0, _ImageCache.inImageCache)(convertedProps);
+
+      var _fixClassName3 = (0, _StyleUtils.fixClassName)(convertedProps),
+          currentClassNames = _fixClassName3[0];
+
+      this.setState({
+        isVisible: imageInCache || convertedProps.critical,
+        imgLoaded: imageInCache,
+        seenBefore: imageInCache,
+        currentClassNames: currentClassNames
+      }, function () {
+        _this2.bgImage = (0, _ImageUtils.getCurrentFromData)({
+          data: _this2.imageRef,
+          propName: "currentSrc",
+          returnArray: true
+        }) || (0, _ImageUtils.getCurrentFromData)({
+          data: _this2.imageRef,
+          propName: "src",
+          returnArray: true
+        });
+        _this2.imageRef = (0, _ImageRef.createPictureRef)((0, _extends2.default)({}, convertedProps, {
+          isVisible: _this2.state.isVisible
+        }), _this2.handleImageLoaded);
+      });
+    }
+  };
+
+  _proto.componentWillUnmount = function componentWillUnmount() {
+    if (this.imageRef) {
+      if (Array.isArray(this.imageRef)) {
+        this.imageRef.forEach(function (currentImageRef) {
+          if (!!currentImageRef && !(0, _SimpleUtils.isString)(currentImageRef)) {
+            currentImageRef.onload = null;
+          }
+        });
+      } else {
+        this.imageRef.onload = null;
+      }
+    }
+
+    if (this.cleanUpListeners) {
+      this.cleanUpListeners();
+    }
+  };
+
+  _proto.handleRef = function handleRef(ref) {
+    this.selfRef = ref;
+
+    if (this.state.IOSupported && ref) {
+      this.cleanUpListeners = (0, _IntersectionObserverUtils.listenToIntersections)(ref, this.intersectionListener, this.props.rootMargin);
+    }
+  };
+
+  _proto.handleImageLoaded = function handleImageLoaded() {
+    (0, _ImageCache.activateCacheForImage)(this.props);
+    this.setState(function (state) {
+      return {
+        imgLoaded: true,
+        imageState: state.imageState + 1
+      };
+    });
+
+    if (this.state.seenBefore) {
+      this.setState({
+        fadeIn: false
+      });
+    }
+
+    if (this.props.onLoad) {
+      this.props.onLoad();
+    }
+  };
+
+  _proto.render = function render() {
+    var _fixOpacity = (0, _StyleUtils.fixOpacity)((0, _HelperUtils.convertProps)(this.props), this.props.preserveStackingContext),
+        className = _fixOpacity.className,
+        _fixOpacity$style = _fixOpacity.style,
+        style = _fixOpacity$style === void 0 ? {} : _fixOpacity$style,
+        fluid = _fixOpacity.fluid,
+        fixed = _fixOpacity.fixed,
+        backgroundColor = _fixOpacity.backgroundColor,
+        durationFadeIn = _fixOpacity.durationFadeIn,
+        Tag = _fixOpacity.Tag,
+        children = _fixOpacity.children,
+        keepStatic = _fixOpacity.keepStatic,
+        props = (0, _objectWithoutPropertiesLoose2.default)(_fixOpacity, _excluded);
+
+    var remainingProps = (0, _HelperUtils.stripRemainingProps)(props);
+    var bgColor = typeof backgroundColor === "boolean" ? "lightgray" : typeof backgroundColor !== "undefined" ? backgroundColor : "";
+    var shouldFadeIn = this.state.fadeIn === true && !this.state.imgCached || this.props.fadeIn === "soft";
+    var transitionDelay = shouldFadeIn ? durationFadeIn / 2 + "ms" : "none";
+    var divStyle = (0, _extends2.default)({
+      position: "relative"
+    }, style);
+    if (!this.props.preserveStackingContext) divStyle.opacity = 0.99;
+    var image = (0, _ImageUtils.getCurrentSrcData)({
+      fluid: fluid,
+      fixed: fixed,
+      returnArray: true
+    });
+    var noScriptImageData = (0, _ImageUtils.getCurrentSrcData)({
+      fluid: fluid,
+      fixed: fixed
+    }) || {};
+
+    if (fluid || fixed) {
+      if (fixed) {
+        divStyle.width = style.width || image.width;
+        divStyle.height = style.height || image.height;
+        divStyle.display = "inline-block";
+
+        if (style.display === "inherit") {
+          delete divStyle.display;
+        }
+      }
+    } else if (keepStatic) {
+      noScriptImageData.srcSet = '';
+    } else {
+      return null;
+    }
+
+    var newImageSettings = (0, _ImageHandling.switchImageSettings)({
+      image: image,
+      bgImage: this.bgImage,
+      imageRef: this.imageRef,
+      state: this.state
+    });
+    this.bgImage = newImageSettings.nextImageArray || newImageSettings.nextImage || this.bgImage;
+    var pseudoStyles = (0, _StyleCreation.createPseudoStyles)((0, _extends2.default)({
+      className: this.state.currentClassNames,
+      transitionDelay: transitionDelay,
+      bgColor: bgColor,
+      backgroundStyles: this.backgroundStyles,
+      style: style,
+      fadeIn: shouldFadeIn
+    }, newImageSettings, {
+      originalData: fluid || fixed
+    }));
+    var noScriptPseudoStyles = (0, _StyleCreation.createNoScriptStyles)({
+      image: image,
+      bgColor: bgColor,
+      className: this.state.currentClassNames,
+      backgroundStyles: this.backgroundStyles,
+      style: style
+    });
+    var componentKey = "" + (fluid ? "fluid" : "") + (fixed ? "fixed" : "") + "-" + JSON.stringify(noScriptImageData.srcSet);
+    var currentStyles = (0, _extends2.default)({}, this.backgroundStyles, divStyle);
+    return _react.default.createElement(Tag, (0, _extends2.default)({
+      className: this.state.currentClassNames,
+      style: currentStyles,
+      ref: this.handleRef,
+      key: componentKey
+    }, remainingProps), _react.default.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: pseudoStyles
+      }
+    }), this.state.hasNoScript && _react.default.createElement("noscript", null, _react.default.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: noScriptPseudoStyles
+      }
+    })), children);
+  };
+
+  return BackgroundImage;
+}(_react.default.Component);
+
+BackgroundImage.defaultProps = {
+  critical: false,
+  fadeIn: true,
+  durationFadeIn: 500,
+  Tag: "div",
+  preserveStackingContext: false,
+  rootMargin: "200px",
+  keepStatic: false
+};
+
+var fixedObject = _propTypes.default.shape({
+  width: _propTypes.default.number.isRequired,
+  height: _propTypes.default.number.isRequired,
+  src: _propTypes.default.string.isRequired,
+  srcSet: _propTypes.default.string.isRequired,
+  base64: _propTypes.default.string,
+  tracedSVG: _propTypes.default.string,
+  srcWebp: _propTypes.default.string,
+  srcSetWebp: _propTypes.default.string,
+  srcAvif: _propTypes.default.string,
+  srcSetAvif: _propTypes.default.string,
+  media: _propTypes.default.string
+});
+
+var fluidObject = _propTypes.default.shape({
+  aspectRatio: _propTypes.default.number.isRequired,
+  src: _propTypes.default.string.isRequired,
+  srcSet: _propTypes.default.string.isRequired,
+  sizes: _propTypes.default.string,
+  base64: _propTypes.default.string,
+  tracedSVG: _propTypes.default.string,
+  srcWebp: _propTypes.default.string,
+  srcSetWebp: _propTypes.default.string,
+  srcAvif: _propTypes.default.string,
+  srcSetAvif: _propTypes.default.string,
+  media: _propTypes.default.string
+});
+
+BackgroundImage.propTypes = {
+  fixed: _propTypes.default.oneOfType([fixedObject, _propTypes.default.arrayOf(fixedObject), _propTypes.default.arrayOf(_propTypes.default.oneOfType([fixedObject, _propTypes.default.string]))]),
+  fluid: _propTypes.default.oneOfType([fluidObject, _propTypes.default.arrayOf(fluidObject), _propTypes.default.arrayOf(_propTypes.default.oneOfType([fluidObject, _propTypes.default.string]))]),
+  fadeIn: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.bool]),
+  durationFadeIn: _propTypes.default.number,
+  className: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.object]),
+  critical: _propTypes.default.bool,
+  crossOrigin: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.bool]),
+  style: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.array]),
+  backgroundColor: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.bool]),
+  onLoad: _propTypes.default.func,
+  onError: _propTypes.default.func,
+  onStartLoad: _propTypes.default.func,
+  Tag: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
+  preserveStackingContext: _propTypes.default.bool,
+  rootMargin: _propTypes.default.string,
+  keepStatic: _propTypes.default.bool
+};
+var _default = BackgroundImage;
+exports.default = _default;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/BackgroundUtils.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/BackgroundUtils.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.getStyleRulesForClassName = exports.getStyleRules = exports.getBackgroundStylesForSingleClass = exports.default = void 0;
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var getStyleRulesForClassName = function getStyleRulesForClassName(className) {
+  var styleSheets = (0, _SimpleUtils.isBrowser)() ? window.document.styleSheets : [];
+
+  for (var i = 0; i < styleSheets.length; i++) {
+    var classes = void 0;
+
+    try {
+      classes = typeof styleSheets[i].rules !== 'undefined' ? styleSheets[i].rules : typeof styleSheets[i].cssRules !== 'undefined' ? styleSheets[i].cssRules : '';
+    } catch (e) {}
+
+    if (classes) {
+      var foundClass = Array.prototype.slice.call(classes).reduce(function (foundAcc, styleRule) {
+        if (styleRule.selectorText === className) {
+          foundAcc.push(styleRule);
+        }
+
+        return foundAcc;
+      }, []);
+
+      if (foundClass.length) {
+        return foundClass;
+      }
+    }
+  }
+
+  return [];
+};
+
+exports.getStyleRulesForClassName = getStyleRulesForClassName;
+
+var getStyleRules = function getStyleRules(cssStyleRules) {
+  var styles = {};
+
+  if (cssStyleRules.length > 0 && typeof cssStyleRules[0].style !== 'undefined') {
+    var constructorName = cssStyleRules[0].style.constructor.name || cssStyleRules[0].style.constructor.toString();
+
+    switch (constructorName) {
+      case 'CSS2Properties':
+      case '[object MSStyleCSSProperties]':
+        Object.values(cssStyleRules[0].style).forEach(function (prop) {
+          styles[(0, _SimpleUtils.toCamelCase)(prop)] = cssStyleRules[0].style[prop];
+        });
+        break;
+
+      case 'CSSStyleDeclaration':
+        styles = cssStyleRules[0].style;
+        break;
+
+      default:
+        console.error('Unknown style object prototype');
+        break;
+    }
+  }
+
+  return styles;
+};
+
+exports.getStyleRules = getStyleRules;
+
+var getBackgroundStylesForSingleClass = function getBackgroundStylesForSingleClass(className) {
+  if (className && (0, _SimpleUtils.isString)(className)) {
+    var cssStyleRules = getStyleRulesForClassName("." + className);
+
+    if ((cssStyleRules === null || cssStyleRules === void 0 ? void 0 : cssStyleRules.length) > 0 && typeof cssStyleRules[0].style !== 'undefined') {
+      return Object.keys(getStyleRules(cssStyleRules)).filter(function (key) {
+        return key.indexOf('background') === 0 && cssStyleRules[0].style[key] !== '';
+      }).reduce(function (newData, key) {
+        newData[(0, _SimpleUtils.toCamelCase)(key)] = cssStyleRules[0].style[key];
+        return newData;
+      }, {});
+    }
+  }
+
+  return {};
+};
+
+exports.getBackgroundStylesForSingleClass = getBackgroundStylesForSingleClass;
+
+var getBackgroundStyles = function getBackgroundStyles(className) {
+  if ((0, _SimpleUtils.isBrowser)()) {
+    var classes = (0, _SimpleUtils.stringToArray)(className);
+
+    if (classes instanceof Array) {
+      var classObjects = [];
+      classes.forEach(function (item) {
+        return classObjects.push(getBackgroundStylesForSingleClass(item));
+      });
+      return Object.assign.apply(Object, classObjects);
+    }
+
+    return getBackgroundStylesForSingleClass(className);
+  }
+
+  return {};
+};
+
+var _default = getBackgroundStyles;
+exports.default = _default;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/ClassCache.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/ClassCache.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.resetComponentClassCache = exports.inComponentClassCache = exports.activateCacheForComponentClass = void 0;
+var componentClassCache = Object.create({});
+
+var inComponentClassCache = function inComponentClassCache(className) {
+  return componentClassCache[className] || false;
+};
+
+exports.inComponentClassCache = inComponentClassCache;
+
+var activateCacheForComponentClass = function activateCacheForComponentClass(className) {
+  if (className) {
+    componentClassCache[className] = true;
+  }
+};
+
+exports.activateCacheForComponentClass = activateCacheForComponentClass;
+
+var resetComponentClassCache = function resetComponentClassCache() {
+  for (var className in componentClassCache) {
+    delete componentClassCache[className];
+  }
+};
+
+exports.resetComponentClassCache = resetComponentClassCache;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/HelperUtils.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/HelperUtils.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+exports.__esModule = true;
+exports.stripRemainingProps = exports.convertProps = void 0;
+
+var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "./node_modules/@babel/runtime/helpers/extends.js"));
+
+var _filterInvalidDomProps = _interopRequireDefault(__webpack_require__(/*! filter-invalid-dom-props */ "./node_modules/filter-invalid-dom-props/dist/index.js"));
+
+var _MediaUtils = __webpack_require__(/*! ./MediaUtils */ "./node_modules/gatsby-background-image/lib/MediaUtils.js");
+
+var stripRemainingProps = function stripRemainingProps(props) {
+  return (0, _filterInvalidDomProps.default)(props);
+};
+
+exports.stripRemainingProps = stripRemainingProps;
+
+var convertProps = function convertProps(props) {
+  var convertedProps = (0, _extends2.default)({}, props);
+  var fixed = convertedProps.fixed,
+      fluid = convertedProps.fluid;
+
+  if (fluid && (0, _MediaUtils.hasArtDirectionSupport)(props, 'fluid')) {
+    convertedProps.fluid = (0, _MediaUtils.groupByMedia)(convertedProps.fluid);
+  }
+
+  if (fixed && (0, _MediaUtils.hasArtDirectionSupport)(props, 'fixed')) {
+    convertedProps.fixed = (0, _MediaUtils.groupByMedia)(convertedProps.fixed);
+  }
+
+  return convertedProps;
+};
+
+exports.convertProps = convertProps;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/ImageCache.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/ImageCache.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.resetImageCache = exports.inImageCache = exports.allInImageCache = exports.activateCacheForMultipleImages = exports.activateCacheForImage = void 0;
+
+var _HelperUtils = __webpack_require__(/*! ./HelperUtils */ "./node_modules/gatsby-background-image/lib/HelperUtils.js");
+
+var _MediaUtils = __webpack_require__(/*! ./MediaUtils */ "./node_modules/gatsby-background-image/lib/MediaUtils.js");
+
+var _ImageUtils = __webpack_require__(/*! ./ImageUtils */ "./node_modules/gatsby-background-image/lib/ImageUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var imageCache = Object.create({});
+
+var inImageCache = function inImageCache(props, index, isLoop) {
+  if (index === void 0) {
+    index = 0;
+  }
+
+  if (isLoop === void 0) {
+    isLoop = false;
+  }
+
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+  var isImageStack = (0, _ImageUtils.hasImageArray)(convertedProps) && !(0, _MediaUtils.hasArtDirectionArray)(convertedProps);
+
+  if (isImageStack && !isLoop) {
+    return allInImageCache(props);
+  }
+
+  var src = isImageStack ? (0, _ImageUtils.getSelectedImage)(convertedProps, index) : (0, _ImageUtils.getImageSrcKey)(convertedProps);
+
+  if ((0, _SimpleUtils.isObject)(src)) {
+    var objectSrc = (0, _ImageUtils.getImageSrcKey)({
+      fluid: src,
+      fixed: src
+    });
+    return imageCache[objectSrc] || false;
+  }
+
+  return imageCache[src] || false;
+};
+
+exports.inImageCache = inImageCache;
+
+var allInImageCache = function allInImageCache(props) {
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+  var imageStack = convertedProps.fluid || convertedProps.fixed;
+  return imageStack.every(function (imageData, index) {
+    return inImageCache(convertedProps, index, true);
+  });
+};
+
+exports.allInImageCache = allInImageCache;
+
+var activateCacheForImage = function activateCacheForImage(props, index, isLoop) {
+  if (index === void 0) {
+    index = 0;
+  }
+
+  if (isLoop === void 0) {
+    isLoop = false;
+  }
+
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+  var isImageStack = (0, _ImageUtils.hasImageArray)(convertedProps) && !(0, _MediaUtils.hasArtDirectionArray)(convertedProps);
+
+  if (isImageStack && !isLoop) {
+    return activateCacheForMultipleImages(props);
+  }
+
+  var src = isImageStack ? (0, _ImageUtils.getSelectedImage)(convertedProps, index) : (0, _ImageUtils.getImageSrcKey)(convertedProps);
+
+  if (src) {
+    if ((0, _SimpleUtils.isObject)(src)) {
+      var objectSrc = (0, _ImageUtils.getImageSrcKey)({
+        fluid: src,
+        fixed: src
+      });
+      imageCache[objectSrc] = true;
+    } else {
+      imageCache[src] = true;
+    }
+  }
+};
+
+exports.activateCacheForImage = activateCacheForImage;
+
+var activateCacheForMultipleImages = function activateCacheForMultipleImages(props) {
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+  var imageStack = convertedProps.fluid || convertedProps.fixed;
+  imageStack.forEach(function (imageData, index) {
+    return activateCacheForImage(convertedProps, index, true);
+  });
+};
+
+exports.activateCacheForMultipleImages = activateCacheForMultipleImages;
+
+var resetImageCache = function resetImageCache() {
+  for (var prop in imageCache) {
+    delete imageCache[prop];
+  }
+};
+
+exports.resetImageCache = resetImageCache;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/ImageHandling.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/ImageHandling.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.switchImageSettings = void 0;
+
+var _ImageUtils = __webpack_require__(/*! ./ImageUtils */ "./node_modules/gatsby-background-image/lib/ImageUtils.js");
+
+var _MediaUtils = __webpack_require__(/*! ./MediaUtils */ "./node_modules/gatsby-background-image/lib/MediaUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var switchImageSettings = function switchImageSettings(_ref) {
+  var image = _ref.image,
+      bgImage = _ref.bgImage,
+      imageRef = _ref.imageRef,
+      state = _ref.state;
+  var currentSources = (0, _ImageUtils.getCurrentFromData)({
+    data: imageRef,
+    propName: "currentSrc"
+  });
+  var returnArray = Array.isArray(image) && !(0, _MediaUtils.hasArtDirectionArray)({
+    fluid: image
+  });
+  var lastImage = Array.isArray(bgImage) ? (0, _SimpleUtils.filteredJoin)(bgImage) : bgImage;
+  var nextImage;
+  var nextImageArray;
+  var finalImage = returnArray && state.seenBefore && !!currentSources;
+
+  if (returnArray) {
+    if (!currentSources) {
+      nextImage = (0, _ImageUtils.getCurrentFromData)({
+        data: image,
+        propName: "tracedSVG",
+        returnArray: returnArray
+      });
+      nextImage = (0, _SimpleUtils.combineArray)((0, _ImageUtils.getCurrentFromData)({
+        data: image,
+        propName: "base64",
+        returnArray: returnArray
+      }), nextImage);
+    }
+
+    nextImage = (0, _SimpleUtils.combineArray)((0, _ImageUtils.getCurrentFromData)({
+      data: image,
+      propName: "CSS_STRING",
+      addUrl: false,
+      returnArray: returnArray
+    }), nextImage);
+
+    if ((state.imgLoaded || !!currentSources) && state.isVisible) {
+      if (currentSources) {
+        nextImage = (0, _SimpleUtils.combineArray)((0, _ImageUtils.getCurrentFromData)({
+          data: imageRef,
+          propName: "currentSrc",
+          returnArray: returnArray
+        }), nextImage);
+        finalImage = true;
+      } else {
+        nextImage = (0, _SimpleUtils.combineArray)((0, _ImageUtils.getCurrentFromData)({
+          data: imageRef,
+          propName: "src",
+          returnArray: returnArray
+        }), nextImage);
+        finalImage = true;
+      }
+    }
+
+    nextImage = (0, _SimpleUtils.combineArray)(nextImage, bgImage);
+    var dummyArray = (0, _ImageUtils.createDummyImageArray)(image.length);
+    nextImage = (0, _SimpleUtils.combineArray)(nextImage, dummyArray);
+    nextImageArray = nextImage;
+    nextImage = (0, _SimpleUtils.filteredJoin)(nextImage);
+  } else {
+    nextImage = "";
+    nextImage = (0, _ImageUtils.getCurrentFromData)({
+      data: image,
+      propName: "tracedSVG"
+    }) || (0, _ImageUtils.getCurrentFromData)({
+      data: image,
+      propName: "base64"
+    });
+
+    if (state.imgLoaded && state.isVisible) {
+      nextImage = currentSources;
+      finalImage = true;
+    }
+  }
+
+  var afterOpacity = state.imageState % 2;
+
+  if (!returnArray && nextImage === "" && state.imgLoaded && state.isVisible && imageRef && !imageRef.currentSrc) {
+    nextImage = (0, _ImageUtils.getCurrentFromData)({
+      data: imageRef,
+      propName: "src",
+      checkLoaded: false
+    });
+    finalImage = true;
+  }
+
+  if (!nextImage) nextImage = lastImage;
+  var newImageSettings = {
+    lastImage: lastImage,
+    nextImage: nextImage,
+    afterOpacity: afterOpacity,
+    finalImage: finalImage
+  };
+  if (nextImageArray) newImageSettings.nextImageArray = nextImageArray;
+  return newImageSettings;
+};
+
+exports.switchImageSettings = switchImageSettings;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/ImageRef.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/ImageRef.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.imageReferenceCompleted = exports.hasPictureRef = exports.hasActivatedPictureRefs = exports.createPictureRef = exports.createMultiplePictureRefs = exports.activatePictureRef = exports.activateMultiplePictureRefs = void 0;
+
+var _HelperUtils = __webpack_require__(/*! ./HelperUtils */ "./node_modules/gatsby-background-image/lib/HelperUtils.js");
+
+var _ImageUtils = __webpack_require__(/*! ./ImageUtils */ "./node_modules/gatsby-background-image/lib/ImageUtils.js");
+
+var _MediaUtils = __webpack_require__(/*! ./MediaUtils */ "./node_modules/gatsby-background-image/lib/MediaUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var _ImageCache = __webpack_require__(/*! ./ImageCache */ "./node_modules/gatsby-background-image/lib/ImageCache.js");
+
+var createPictureRef = function createPictureRef(props, onLoad, index, isLoop) {
+  if (isLoop === void 0) {
+    isLoop = false;
+  }
+
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+
+  if ((0, _SimpleUtils.isBrowser)() && (typeof convertedProps.fluid !== "undefined" || typeof convertedProps.fixed !== "undefined")) {
+    var isImageStack = (0, _ImageUtils.hasImageArray)(convertedProps) && !(0, _MediaUtils.hasArtDirectionArray)(convertedProps);
+
+    if (isImageStack && !isLoop) {
+      return createMultiplePictureRefs(props, onLoad);
+    }
+
+    var img = new Image();
+
+    img.onload = function () {
+      return onLoad();
+    };
+
+    if (!img.complete && typeof convertedProps.onLoad === "function") {
+      img.addEventListener('load', convertedProps.onLoad);
+    }
+
+    if (typeof convertedProps.onError === "function") {
+      img.addEventListener('error', convertedProps.onError);
+    }
+
+    if (convertedProps.crossOrigin) {
+      img.crossOrigin = convertedProps.crossOrigin;
+    }
+
+    if ((convertedProps.critical || convertedProps.isVisible) && !isLoop) {
+      return activatePictureRef(img, convertedProps, index, isLoop);
+    }
+
+    return img;
+  }
+
+  return null;
+};
+
+exports.createPictureRef = createPictureRef;
+
+var createMultiplePictureRefs = function createMultiplePictureRefs(props, onLoad) {
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+  var imageStack = convertedProps.fluid || convertedProps.fixed;
+  var imageRefs = imageStack.map(function (imageData, index) {
+    return createPictureRef(convertedProps, onLoad, index, true);
+  });
+
+  if (convertedProps.critical || convertedProps.isVisible) {
+    return activatePictureRef(imageRefs, convertedProps);
+  }
+
+  return imageRefs;
+};
+
+exports.createMultiplePictureRefs = createMultiplePictureRefs;
+
+var activatePictureRef = function activatePictureRef(imageRef, props, selfRef, index, isLoop) {
+  if (selfRef === void 0) {
+    selfRef = null;
+  }
+
+  if (index === void 0) {
+    index = 0;
+  }
+
+  if (isLoop === void 0) {
+    isLoop = false;
+  }
+
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+
+  if ((0, _SimpleUtils.isBrowser)() && (typeof convertedProps.fluid !== "undefined" || typeof convertedProps.fixed !== "undefined")) {
+    var isImageStack = (0, _ImageUtils.hasImageArray)(convertedProps) && !(0, _MediaUtils.hasArtDirectionArray)(convertedProps);
+
+    if (isImageStack && !isLoop) {
+      return activateMultiplePictureRefs(imageRef, props, selfRef);
+    }
+
+    var bodyClone = document.createElement('body');
+    var imageData = isImageStack ? (0, _ImageUtils.getSelectedImage)(convertedProps, index) : (0, _ImageUtils.getCurrentSrcData)(convertedProps);
+
+    if (!imageData) {
+      return null;
+    }
+
+    if ((0, _SimpleUtils.isString)(imageData)) {
+      return imageData;
+    }
+
+    if (selfRef) {
+      imageRef.width = selfRef.offsetWidth;
+      imageRef.height = selfRef.offsetHeight;
+    }
+
+    if ((0, _ImageUtils.hasPictureElement)()) {
+      var pic = document.createElement('picture');
+
+      if (selfRef) {
+        pic.width = imageRef.width;
+        pic.height = imageRef.height;
+      }
+
+      if ((0, _MediaUtils.hasArtDirectionArray)(convertedProps)) {
+        var sources = (0, _MediaUtils.createArtDirectionSources)(convertedProps).reverse();
+        sources.forEach(function (currentSource) {
+          return pic.appendChild(currentSource);
+        });
+      }
+
+      var sourcesAvif = (0, _MediaUtils.createSourceElementForSrcSet)(imageData, 'avif');
+      sourcesAvif && pic.appendChild(sourcesAvif);
+      var sourcesWebp = (0, _MediaUtils.createSourceElementForSrcSet)(imageData, 'webp');
+      sourcesWebp && pic.appendChild(sourcesWebp);
+      pic.appendChild(imageRef);
+      bodyClone.appendChild(pic);
+    }
+
+    imageRef.sizes = imageData.sizes || "";
+    imageRef.srcset = imageData.srcSet || "";
+    imageRef.src = imageData.src || "";
+    return imageRef;
+  }
+
+  return null;
+};
+
+exports.activatePictureRef = activatePictureRef;
+
+var activateMultiplePictureRefs = function activateMultiplePictureRefs(imageRefs, props, selfRef) {
+  return imageRefs.map(function (imageRef, index) {
+    return activatePictureRef(imageRef, props, selfRef, index, true);
+  });
+};
+
+exports.activateMultiplePictureRefs = activateMultiplePictureRefs;
+
+var hasActivatedPictureRefs = function hasActivatedPictureRefs(imageRefs) {
+  return Array.isArray(imageRefs) ? imageRefs.every(function (imageRef) {
+    return hasPictureRef(imageRef);
+  }) : hasPictureRef(imageRefs);
+};
+
+exports.hasActivatedPictureRefs = hasActivatedPictureRefs;
+
+var hasPictureRef = function hasPictureRef(imageRef) {
+  return (0, _SimpleUtils.isString)(imageRef) || !!imageRef && !!imageRef.currentSrc;
+};
+
+exports.hasPictureRef = hasPictureRef;
+
+var imageReferenceCompleted = function imageReferenceCompleted(imageRef, props) {
+  return imageRef ? Array.isArray(imageRef) ? imageRef.every(function (singleImageRef) {
+    return (0, _ImageUtils.imageLoaded)(singleImageRef);
+  }) || (0, _ImageCache.inImageCache)(props) : (0, _ImageUtils.imageLoaded)(imageRef) || (0, _ImageCache.inImageCache)(props) : (0, _SimpleUtils.isString)(imageRef);
+};
+
+exports.imageReferenceCompleted = imageReferenceCompleted;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/ImageUtils.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/ImageUtils.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.isBase64 = exports.imagePropsChanged = exports.imageLoaded = exports.imageArrayPropsChanged = exports.hasPictureElement = exports.hasImageUrl = exports.hasImageArray = exports.getUrlString = exports.getSelectedImage = exports.getImageSrcKey = exports.getCurrentSrcData = exports.getCurrentFromData = exports.createDummyImageArray = void 0;
+
+var _MediaUtils = __webpack_require__(/*! ./MediaUtils */ "./node_modules/gatsby-background-image/lib/MediaUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var hasPictureElement = function hasPictureElement() {
+  return typeof HTMLPictureElement !== "undefined" || (0, _SimpleUtils.isBrowser)();
+};
+
+exports.hasPictureElement = hasPictureElement;
+
+var hasImageArray = function hasImageArray(props) {
+  return Boolean(props.fluid && Array.isArray(props.fluid) || props.fixed && Array.isArray(props.fixed));
+};
+
+exports.hasImageArray = hasImageArray;
+
+var getCurrentFromData = function getCurrentFromData(_ref) {
+  var data = _ref.data,
+      propName = _ref.propName,
+      _ref$addUrl = _ref.addUrl,
+      addUrl = _ref$addUrl === void 0 ? true : _ref$addUrl,
+      _ref$returnArray = _ref.returnArray,
+      returnArray = _ref$returnArray === void 0 ? false : _ref$returnArray,
+      _ref$checkLoaded = _ref.checkLoaded,
+      checkLoaded = _ref$checkLoaded === void 0 ? true : _ref$checkLoaded;
+  if (!data || !propName) return "";
+  var tracedSVG = propName === "tracedSVG";
+
+  if (Array.isArray(data) && !(0, _MediaUtils.hasArtDirectionArray)({
+    fluid: data
+  })) {
+    var imageString = data.map(function (dataElement) {
+      if (propName === "currentSrc" || propName === 'src') {
+        return checkLoaded ? imageLoaded(dataElement) && dataElement[propName] || "" : dataElement[propName];
+      }
+
+      if (propName === "CSS_STRING" && (0, _SimpleUtils.isString)(dataElement)) {
+        return dataElement;
+      }
+
+      return (0, _SimpleUtils.isString)(dataElement) ? dataElement : dataElement && propName in dataElement ? dataElement[propName] : "";
+    });
+    return getUrlString({
+      imageString: imageString,
+      tracedSVG: tracedSVG,
+      addUrl: addUrl,
+      returnArray: returnArray
+    });
+  }
+
+  if ((0, _MediaUtils.hasArtDirectionArray)({
+    fluid: data
+  }) && (propName === "currentSrc" || propName === "src" || propName === "base64" || tracedSVG)) {
+    var currentData = getCurrentSrcData({
+      fluid: data
+    });
+    return propName in currentData ? getUrlString({
+      imageString: currentData[propName],
+      tracedSVG: tracedSVG,
+      addUrl: addUrl
+    }) : "";
+  }
+
+  if (typeof data !== 'object') {
+    return '';
+  }
+
+  if ((propName === "currentSrc" || propName === 'src') && propName in data) {
+    return getUrlString({
+      imageString: checkLoaded ? imageLoaded(data) && data[propName] || "" : data[propName],
+      addUrl: addUrl
+    });
+  }
+
+  return propName in data ? getUrlString({
+    imageString: data[propName],
+    tracedSVG: tracedSVG,
+    addUrl: addUrl
+  }) : "";
+};
+
+exports.getCurrentFromData = getCurrentFromData;
+
+var getImageSrcKey = function getImageSrcKey(_ref2) {
+  var fluid = _ref2.fluid,
+      fixed = _ref2.fixed;
+  var data = getCurrentSrcData({
+    fluid: fluid,
+    fixed: fixed
+  });
+  return data ? data.src || null : null;
+};
+
+exports.getImageSrcKey = getImageSrcKey;
+
+var getCurrentSrcData = function getCurrentSrcData(_ref3, index) {
+  var fluid = _ref3.fluid,
+      fixed = _ref3.fixed,
+      returnArray = _ref3.returnArray;
+
+  if (index === void 0) {
+    index = 0;
+  }
+
+  var currentData = fluid || fixed;
+
+  if (hasImageArray({
+    fluid: fluid,
+    fixed: fixed
+  })) {
+    if (returnArray) {
+      return currentData;
+    }
+
+    if ((0, _SimpleUtils.isBrowser)() && (0, _MediaUtils.hasArtDirectionArray)({
+      fluid: fluid,
+      fixed: fixed
+    })) {
+      var mediaData = currentData.slice().reverse();
+      var foundMedia = mediaData.findIndex(_MediaUtils.matchesMedia);
+
+      if (foundMedia !== -1) {
+        return mediaData[foundMedia];
+      }
+    }
+
+    return currentData[index];
+  }
+
+  return currentData;
+};
+
+exports.getCurrentSrcData = getCurrentSrcData;
+
+var getSelectedImage = function getSelectedImage(_ref4, index) {
+  var fluid = _ref4.fluid,
+      fixed = _ref4.fixed;
+
+  if (index === void 0) {
+    index = 0;
+  }
+
+  var currentData = fluid || fixed;
+
+  if (hasImageArray({
+    fluid: fluid,
+    fixed: fixed
+  })) {
+    return currentData[index] || currentData[0];
+  }
+
+  return currentData;
+};
+
+exports.getSelectedImage = getSelectedImage;
+
+var getUrlString = function getUrlString(_ref5) {
+  var imageString = _ref5.imageString,
+      _ref5$tracedSVG = _ref5.tracedSVG,
+      tracedSVG = _ref5$tracedSVG === void 0 ? false : _ref5$tracedSVG,
+      _ref5$addUrl = _ref5.addUrl,
+      addUrl = _ref5$addUrl === void 0 ? true : _ref5$addUrl,
+      _ref5$returnArray = _ref5.returnArray,
+      returnArray = _ref5$returnArray === void 0 ? false : _ref5$returnArray,
+      _ref5$hasImageUrls = _ref5.hasImageUrls,
+      hasImageUrls = _ref5$hasImageUrls === void 0 ? false : _ref5$hasImageUrls;
+
+  if (Array.isArray(imageString)) {
+    var stringArray = imageString.map(function (currentString) {
+      if (currentString) {
+        var _base = isBase64(currentString);
+
+        var _imageUrl = hasImageUrls || hasImageUrl(currentString);
+
+        var currentReturnString = currentString && tracedSVG ? "\"" + currentString + "\"" : currentString && !_base && !tracedSVG && _imageUrl ? "'" + currentString + "'" : currentString;
+        return addUrl && currentString ? "url(" + currentReturnString + ")" : currentReturnString;
+      }
+
+      return currentString;
+    });
+    return returnArray ? stringArray : (0, _SimpleUtils.filteredJoin)(stringArray);
+  }
+
+  var base64 = isBase64(imageString);
+  var imageUrl = hasImageUrls || hasImageUrl(imageString);
+  var returnString = imageString && tracedSVG ? "\"" + imageString + "\"" : imageString && !base64 && !tracedSVG && imageUrl ? "'" + imageString + "'" : imageString;
+  return imageString ? addUrl ? "url(" + returnString + ")" : returnString : "";
+};
+
+exports.getUrlString = getUrlString;
+
+var isBase64 = function isBase64(base64String) {
+  return (0, _SimpleUtils.isString)(base64String) && base64String.indexOf("base64") !== -1;
+};
+
+exports.isBase64 = isBase64;
+
+var hasImageUrl = function hasImageUrl(imageString) {
+  return (0, _SimpleUtils.isString)(imageString) && imageString.substr(0, 4) === "http";
+};
+
+exports.hasImageUrl = hasImageUrl;
+
+var imagePropsChanged = function imagePropsChanged(props, prevProps) {
+  return props.fluid && !prevProps.fluid || props.fixed && !prevProps.fixed || imageArrayPropsChanged(props, prevProps) || props.fluid && prevProps.fluid && props.fluid.src !== prevProps.fluid.src || props.fixed && prevProps.fixed && props.fixed.src !== prevProps.fixed.src;
+};
+
+exports.imagePropsChanged = imagePropsChanged;
+
+var imageArrayPropsChanged = function imageArrayPropsChanged(props, prevProps) {
+  var isPropsFluidArray = Array.isArray(props.fluid);
+  var isPrevPropsFluidArray = Array.isArray(prevProps.fluid);
+  var isPropsFixedArray = Array.isArray(props.fixed);
+  var isPrevPropsFixedArray = Array.isArray(prevProps.fixed);
+
+  if (isPropsFluidArray && !isPrevPropsFluidArray || isPropsFixedArray && !isPrevPropsFixedArray || !isPropsFluidArray && isPrevPropsFluidArray || !isPropsFixedArray && isPrevPropsFixedArray) {
+    return true;
+  }
+
+  if (isPropsFluidArray && isPrevPropsFluidArray) {
+    if (props.fluid.length === prevProps.fluid.length) {
+      return props.fluid.some(function (image, index) {
+        return image.src !== prevProps.fluid[index].src;
+      });
+    }
+
+    return true;
+  }
+
+  if (isPropsFixedArray && isPrevPropsFixedArray) {
+    if (props.fixed.length === prevProps.fixed.length) {
+      return props.fixed.some(function (image, index) {
+        return image.src !== prevProps.fixed[index].src;
+      });
+    }
+
+    return true;
+  }
+};
+
+exports.imageArrayPropsChanged = imageArrayPropsChanged;
+
+var createDummyImageArray = function createDummyImageArray(length) {
+  var DUMMY_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+  var dummyImageURI = getUrlString({
+    imageString: DUMMY_IMG
+  });
+  return Array(length).fill(dummyImageURI);
+};
+
+exports.createDummyImageArray = createDummyImageArray;
+
+var imageLoaded = function imageLoaded(imageRef) {
+  return imageRef ? (0, _SimpleUtils.isString)(imageRef) || imageRef.complete && imageRef.naturalWidth !== 0 && imageRef.naturalHeight !== 0 : false;
+};
+
+exports.imageLoaded = imageLoaded;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/IntersectionObserverUtils.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/IntersectionObserverUtils.js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.listenToIntersections = exports.getIO = exports.callbackIO = void 0;
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var io;
+var listeners = new WeakMap();
+
+var callbackIO = function callbackIO(entries) {
+  entries.forEach(function (entry) {
+    if (listeners.has(entry.target)) {
+      var callback = listeners.get(entry.target);
+
+      if (entry.isIntersecting || entry.intersectionRatio > 0) {
+        io.unobserve(entry.target);
+        listeners.delete(entry.target);
+        callback();
+      }
+    }
+  });
+};
+
+exports.callbackIO = callbackIO;
+
+var getIO = function getIO(rootMargin) {
+  if (typeof io === "undefined" && (0, _SimpleUtils.isBrowser)() && window.IntersectionObserver) {
+    io = new window.IntersectionObserver(callbackIO, {
+      rootMargin: rootMargin
+    });
+  }
+
+  return io;
+};
+
+exports.getIO = getIO;
+
+var listenToIntersections = function listenToIntersections(element, callback, rootMargin) {
+  if (rootMargin === void 0) {
+    rootMargin = "200px";
+  }
+
+  var observer = getIO(rootMargin);
+
+  if (observer) {
+    observer.observe(element);
+    listeners.set(element, callback);
+    return function () {
+      observer.unobserve(element);
+      listeners.delete(element);
+    };
+  }
+
+  return function () {};
+};
+
+exports.listenToIntersections = listenToIntersections;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/MediaUtils.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/MediaUtils.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+exports.__esModule = true;
+exports.matchesMedia = exports.hasArtDirectionSupport = exports.hasArtDirectionArray = exports.groupByMedia = exports.createSourceElementForSrcSet = exports.createArtDirectionSources = void 0;
+
+var _sortMediaQueries = _interopRequireDefault(__webpack_require__(/*! sort-media-queries */ "./node_modules/sort-media-queries/lib/index.js"));
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var groupByMedia = function groupByMedia(imageVariants) {
+  var without = [];
+  var sortedVariants = (0, _sortMediaQueries.default)(imageVariants, 'media');
+  sortedVariants.forEach(function (variant) {
+    return !variant.media && without.push(variant);
+  });
+
+  if (without.length > 1 && "development" !== "production") {
+    console.warn("We've found " + without.length + " sources without a media property. They might be ignored by the browser, see: https://www.gatsbyjs.org/packages/gatsby-image/#art-directing-multiple-images");
+  }
+
+  return sortedVariants;
+};
+
+exports.groupByMedia = groupByMedia;
+
+var createSourceElementForSrcSet = function createSourceElementForSrcSet(image, type) {
+  var source = document.createElement('source');
+  var srcSetName = "srcSet" + (0, _SimpleUtils.capitalize)(type);
+
+  if (srcSetName in image) {
+    source.type = "image/" + type;
+    source.srcset = image[srcSetName];
+  }
+
+  if (image.sizes) {
+    source.sizes = image.sizes;
+  }
+
+  if (image.media) {
+    source.media = image.media;
+  }
+
+  return source.srcset ? source : null;
+};
+
+exports.createSourceElementForSrcSet = createSourceElementForSrcSet;
+
+var createArtDirectionSources = function createArtDirectionSources(_ref) {
+  var fluid = _ref.fluid,
+      fixed = _ref.fixed;
+  var currentSource = fluid || fixed;
+  return currentSource.reduce(function (sources, image) {
+    if (!image.media) {
+      return sources;
+    }
+
+    var sourceWebp = createSourceElementForSrcSet(image, 'webp');
+    var sourceAvif = createSourceElementForSrcSet(image, 'avif');
+    sourceWebp && sources.push(sourceWebp);
+    sourceAvif && sources.push(sourceAvif);
+    return sources;
+  }, []);
+};
+
+exports.createArtDirectionSources = createArtDirectionSources;
+
+var hasArtDirectionSupport = function hasArtDirectionSupport(props, prop) {
+  return props[prop] && Array.isArray(props[prop]) && props[prop].some(function (image) {
+    return !!image && typeof image.media !== 'undefined';
+  });
+};
+
+exports.hasArtDirectionSupport = hasArtDirectionSupport;
+
+var hasArtDirectionArray = function hasArtDirectionArray(props) {
+  return hasArtDirectionSupport(props, 'fluid') || hasArtDirectionSupport(props, 'fixed');
+};
+
+exports.hasArtDirectionArray = hasArtDirectionArray;
+
+var matchesMedia = function matchesMedia(_ref2) {
+  var media = _ref2.media;
+  return media ? (0, _SimpleUtils.isBrowser)() && typeof window.matchMedia !== "undefined" && !!window.matchMedia(media).matches : false;
+};
+
+exports.matchesMedia = matchesMedia;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/SimpleUtils.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/SimpleUtils.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+exports.__esModule = true;
+exports.toKebabCase = exports.toCamelCase = exports.stringToArray = exports.isString = exports.isObject = exports.isBrowser = exports.hashString = exports.filteredJoin = exports.combineArray = exports.capitalize = void 0;
+
+var isBrowser = function isBrowser() {
+  return typeof window !== "undefined" && typeof window.document !== "undefined";
+};
+
+exports.isBrowser = isBrowser;
+
+var isString = function isString(value) {
+  return Object.prototype.toString.call(value) === '[object String]';
+};
+
+exports.isString = isString;
+
+var isObject = function isObject(value) {
+  return Object.prototype.toString.call(value) === '[object Object]';
+};
+
+exports.isObject = isObject;
+
+var toCamelCase = function toCamelCase(str) {
+  return isString(str) && str.indexOf('-') !== -1 && str.toLowerCase().replace(/(?:^\w|-|[A-Z]|\b\w)/g, function (letter, index) {
+    return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
+  }).replace(/\s|\W+/g, '') || str;
+};
+
+exports.toCamelCase = toCamelCase;
+
+var toKebabCase = function toKebabCase(str) {
+  return isString(str) && str.replace(/\s|\W+/g, '').replace(/[A-Z]/g, function (match) {
+    return "-" + match.toLowerCase();
+  });
+};
+
+exports.toKebabCase = toKebabCase;
+
+var capitalize = function capitalize(str) {
+  return (str === null || str === void 0 ? void 0 : str.charAt(0).toUpperCase()) + str.slice(1);
+};
+
+exports.capitalize = capitalize;
+
+var stringToArray = function stringToArray(str, delimiter) {
+  if (delimiter === void 0) {
+    delimiter = " ";
+  }
+
+  if (str instanceof Array) {
+    return str;
+  }
+
+  if (isString(str)) {
+    if (str.includes(delimiter)) {
+      return str.split(delimiter);
+    }
+
+    return [str];
+  }
+
+  return false;
+};
+
+exports.stringToArray = stringToArray;
+
+var hashString = function hashString(str) {
+  return isString(str) && [].reduce.call(str, function (hash, item) {
+    hash = (hash << 5) - hash + item.charCodeAt(0);
+    return hash | 0;
+  }, 0);
+};
+
+exports.hashString = hashString;
+
+var filteredJoin = function filteredJoin(arrayToJoin) {
+  return arrayToJoin.filter(function (item) {
+    return item !== "";
+  }).join();
+};
+
+exports.filteredJoin = filteredJoin;
+
+var combineArray = function combineArray(fromArray, toArray) {
+  if (!Array.isArray(fromArray)) {
+    return [fromArray];
+  }
+
+  return fromArray.map(function (item, index) {
+    return item || toArray && toArray[index];
+  });
+};
+
+exports.combineArray = combineArray;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/StyleCreation.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/StyleCreation.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+exports.__esModule = true;
+exports.createStyleImage = exports.createPseudoStyles = exports.createPseudoElementWithContent = exports.createPseudoElementMediaQuery = exports.createPseudoElement = exports.createNoScriptStyles = void 0;
+
+var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "./node_modules/@babel/runtime/helpers/extends.js"));
+
+var _StyleUtils = __webpack_require__(/*! ./StyleUtils */ "./node_modules/gatsby-background-image/lib/StyleUtils.js");
+
+var _ImageUtils = __webpack_require__(/*! ./ImageUtils */ "./node_modules/gatsby-background-image/lib/ImageUtils.js");
+
+var _MediaUtils = __webpack_require__(/*! ./MediaUtils */ "./node_modules/gatsby-background-image/lib/MediaUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var createPseudoElement = function createPseudoElement(className, appendix) {
+  if (appendix === void 0) {
+    appendix = ":before";
+  }
+
+  var escapedClassName = (0, _StyleUtils.escapeClassNames)(className);
+  var classes = (0, _SimpleUtils.stringToArray)(escapedClassName);
+  var pseudoClasses = "";
+
+  if (Array.isArray(classes)) {
+    classes = classes.filter(function (c) {
+      return c !== '';
+    });
+
+    if (classes.length > 0) {
+      pseudoClasses = "." + classes.join('.') + appendix;
+    }
+  }
+
+  return pseudoClasses;
+};
+
+exports.createPseudoElement = createPseudoElement;
+
+var createPseudoElementWithContent = function createPseudoElementWithContent(pseudoElementString, imageSource) {
+  return "\n    " + pseudoElementString + " {\n      opacity: 1;\n      background-image: " + imageSource + ";\n    }";
+};
+
+exports.createPseudoElementWithContent = createPseudoElementWithContent;
+
+var createPseudoElementMediaQuery = function createPseudoElementMediaQuery(pseudoElementString, media, imageSource, imageSourceWebP) {
+  return "\n      @media " + media + " {\n        " + createPseudoElementWithContent(pseudoElementString, imageSource) + "\n      }\n      " + (imageSourceWebP && "@media " + media + " {\n          " + createPseudoElementWithContent(pseudoElementString, imageSourceWebP) + "\n        }") + "\n    ";
+};
+
+exports.createPseudoElementMediaQuery = createPseudoElementMediaQuery;
+
+var createPseudoStyles = function createPseudoStyles(_ref) {
+  var className = _ref.className,
+      transitionDelay = _ref.transitionDelay,
+      lastImage = _ref.lastImage,
+      nextImage = _ref.nextImage,
+      afterOpacity = _ref.afterOpacity,
+      bgColor = _ref.bgColor,
+      fadeIn = _ref.fadeIn,
+      backgroundStyles = _ref.backgroundStyles,
+      style = _ref.style,
+      finalImage = _ref.finalImage,
+      originalData = _ref.originalData;
+  var pseudoBefore = createPseudoElement(className);
+  var pseudoAfter = createPseudoElement(className, ":after");
+  var currentBackgroundStyles = (0, _extends2.default)({}, backgroundStyles, style);
+  return "\n          " + pseudoBefore + ",\n          " + pseudoAfter + " {\n            content: '';\n            display: block;\n            position: absolute;\n            width: 100%;\n            height: 100%;\n            top: 0;\n            left: 0;\n            " + (bgColor && "background-color: " + bgColor + ";") + "\n            " + (0, _StyleUtils.setTransitionStyles)(transitionDelay, fadeIn) + "\n            " + (0, _StyleUtils.kebabifyBackgroundStyles)(currentBackgroundStyles) + "\n          }\n          " + pseudoBefore + " {\n            z-index: -100;\n            " + ((!afterOpacity || finalImage) && createStyleImage(nextImage, originalData) || "") + "\n            " + (afterOpacity && lastImage && createStyleImage(lastImage, originalData) || "") + "\n            opacity: " + Number(!afterOpacity) + "; \n          }\n          " + pseudoAfter + " {\n            z-index: -101;\n            " + ((afterOpacity || finalImage) && createStyleImage(nextImage, originalData) || "") + "\n            " + (!afterOpacity && lastImage && createStyleImage(lastImage, originalData) || "") + "\n            " + (finalImage ? "opacity: " + Number(afterOpacity) + ";" : "") + "\n          }\n        ";
+};
+
+exports.createPseudoStyles = createPseudoStyles;
+
+var createStyleImage = function createStyleImage(image, originalData) {
+  var hasStackedImages = (0, _ImageUtils.hasImageArray)({
+    fluid: originalData
+  }) && !(0, _MediaUtils.hasArtDirectionArray)({
+    fluid: originalData
+  });
+
+  if ((0, _SimpleUtils.isBrowser)() || hasStackedImages) {
+    return image ? "background-image: " + image + ";" : "";
+  }
+
+  return "";
+};
+
+exports.createStyleImage = createStyleImage;
+
+var createNoScriptStyles = function createNoScriptStyles(_ref2) {
+  var className = _ref2.className,
+      image = _ref2.image;
+
+  if (image) {
+    var returnArray = Array.isArray(image) && !(0, _MediaUtils.hasArtDirectionArray)({
+      fluid: image
+    });
+    var addUrl = false;
+    var allSources = (0, _ImageUtils.getCurrentFromData)({
+      data: image,
+      propName: "src",
+      checkLoaded: false,
+      addUrl: addUrl,
+      returnArray: returnArray
+    });
+    var sourcesAsUrl = (0, _ImageUtils.getUrlString)({
+      imageString: allSources,
+      hasImageUrls: true,
+      returnArray: returnArray
+    });
+    var sourcesAsUrlWithCSS = "";
+
+    if (returnArray) {
+      var cssStrings = (0, _ImageUtils.getCurrentFromData)({
+        data: image,
+        propName: "CSS_STRING",
+        addUrl: false,
+        returnArray: returnArray
+      });
+      sourcesAsUrlWithCSS = (0, _SimpleUtils.filteredJoin)((0, _SimpleUtils.combineArray)(sourcesAsUrl, cssStrings));
+    }
+
+    var pseudoBefore = createPseudoElement(className);
+
+    if ((0, _MediaUtils.hasArtDirectionArray)({
+      fluid: image
+    })) {
+      return image.map(function (currentMedia) {
+        var sourceString = (0, _ImageUtils.getUrlString)({
+          imageString: currentMedia.src
+        });
+        var webPString = (0, _ImageUtils.getUrlString)({
+          imageString: currentMedia.srcWebp || ""
+        });
+
+        if (currentMedia.media) {
+          return createPseudoElementMediaQuery(pseudoBefore, currentMedia.media, sourceString, webPString);
+        }
+
+        return createPseudoElementMediaQuery(pseudoBefore, 'screen', sourceString, webPString);
+      }).join('');
+    }
+
+    return createPseudoElementWithContent(pseudoBefore, sourcesAsUrlWithCSS || sourcesAsUrl);
+  }
+
+  return "";
+};
+
+exports.createNoScriptStyles = createNoScriptStyles;
+
+/***/ }),
+
+/***/ "./node_modules/gatsby-background-image/lib/StyleUtils.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/gatsby-background-image/lib/StyleUtils.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+exports.__esModule = true;
+exports.setTransitionStyles = exports.presetBackgroundStyles = exports.kebabifyBackgroundStyles = exports.fixOpacity = exports.fixClassName = exports.escapeClassNames = void 0;
+
+var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "./node_modules/@babel/runtime/helpers/extends.js"));
+
+var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
+
+var _shortUuid = _interopRequireDefault(__webpack_require__(/*! short-uuid */ "./node_modules/short-uuid/index.js"));
+
+var _HelperUtils = __webpack_require__(/*! ./HelperUtils */ "./node_modules/gatsby-background-image/lib/HelperUtils.js");
+
+var _ClassCache = __webpack_require__(/*! ./ClassCache */ "./node_modules/gatsby-background-image/lib/ClassCache.js");
+
+var _ImageUtils = __webpack_require__(/*! ./ImageUtils */ "./node_modules/gatsby-background-image/lib/ImageUtils.js");
+
+var _SimpleUtils = __webpack_require__(/*! ./SimpleUtils */ "./node_modules/gatsby-background-image/lib/SimpleUtils.js");
+
+var _excluded = ["className"];
+
+var fixClassName = function fixClassName(_ref) {
+  var className = _ref.className,
+      props = (0, _objectWithoutPropertiesLoose2.default)(_ref, _excluded);
+  var convertedProps = (0, _HelperUtils.convertProps)(props);
+  var elementExists = (0, _ClassCache.inComponentClassCache)(className);
+  var imageData = (0, _ImageUtils.getCurrentSrcData)(convertedProps);
+
+  var additionalClassname = _shortUuid.default.generate();
+
+  var randomClass = " gbi-" + (0, _SimpleUtils.hashString)(imageData && imageData.srcSet || className || "noclass") + "-" + additionalClassname;
+  var additionalClass = elementExists || !className ? randomClass : "";
+  var componentClassNames = ("" + (className || "") + (additionalClass || "")).trim();
+  if (!elementExists) (0, _ClassCache.activateCacheForComponentClass)(className);
+  return [componentClassNames];
+};
+
+exports.fixClassName = fixClassName;
+
+var escapeClassNames = function escapeClassNames(classNames) {
+  if (classNames) {
+    var specialChars = (0, _SimpleUtils.isBrowser)() && window._gbiSpecialChars ? window._gbiSpecialChars : typeof __GBI_SPECIAL_CHARS__ !== "undefined" ? __GBI_SPECIAL_CHARS__ : ':/';
+    var specialCharRegEx = new RegExp("[" + specialChars + "]", 'g');
+    return classNames.replace(specialCharRegEx, '\\$&');
+  }
+
+  return classNames;
+};
+
+exports.escapeClassNames = escapeClassNames;
+
+var kebabifyBackgroundStyles = function kebabifyBackgroundStyles(styles) {
+  if ((0, _SimpleUtils.isString)(styles)) {
+    return styles;
+  }
+
+  if (styles instanceof Object) {
+    return Object.keys(styles).filter(function (key) {
+      return key.indexOf('background') === 0 && styles[key] !== '';
+    }).reduce(function (resultingStyles, key) {
+      return "" + resultingStyles + (0, _SimpleUtils.toKebabCase)(key) + ": " + styles[key] + ";\n";
+    }, "");
+  }
+
+  return "";
+};
+
+exports.kebabifyBackgroundStyles = kebabifyBackgroundStyles;
+
+var setTransitionStyles = function setTransitionStyles(transitionDelay, fadeIn) {
+  if (transitionDelay === void 0) {
+    transitionDelay = "0.25s";
+  }
+
+  if (fadeIn === void 0) {
+    fadeIn = true;
+  }
+
+  return fadeIn ? "transition: opacity 0.5s ease " + transitionDelay + ";" : "transition: none;";
+};
+
+exports.setTransitionStyles = setTransitionStyles;
+
+var fixOpacity = function fixOpacity(props) {
+  var styledProps = (0, _extends2.default)({}, props);
+
+  if (!styledProps.preserveStackingContext) {
+    try {
+      if (styledProps.style && styledProps.style.opacity) {
+        if (isNaN(styledProps.style.opacity) || styledProps.style.opacity > 0.99) {
+          styledProps.style.opacity = 0.99;
+        }
+      }
+    } catch (e) {}
+  }
+
+  return styledProps;
+};
+
+exports.fixOpacity = fixOpacity;
+
+var presetBackgroundStyles = function presetBackgroundStyles(backgroundStyles) {
+  var defaultBackgroundStyles = {
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover"
+  };
+  return (0, _extends2.default)({}, defaultBackgroundStyles, backgroundStyles);
+};
+
+exports.presetBackgroundStyles = presetBackgroundStyles;
+
+/***/ }),
+
 /***/ "./node_modules/gatsby-plugin-image/dist/gatsby-image.module.js":
 /*!**********************************************************************!*\
   !*** ./node_modules/gatsby-plugin-image/dist/gatsby-image.module.js ***!
@@ -18147,22 +20194,22 @@ const Footer = ({
     className: "flex justify-center mb-6"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     id: "facebook",
-    class: "bg-white  sticky duration-500 border-2 border-blue-600 fixed  w-12 transform hover:-translate-y-3   h-12 text-2xl rounded-full hover:bg-blue-600 hover:text-white text-blue-600 "
+    className: "bg-white  sticky duration-500 border-2 border-blue-600 fixed  w-12 transform hover:-translate-y-3   h-12 text-2xl rounded-full hover:bg-blue-600 hover:text-white text-blue-600 mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_5__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_7__.faFacebook
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     id: "instagram",
-    class: " border-2 hover:border-0 border-pink-500 bg-gradient-to-b text-2xl hover:from-indigo-600 hover:via-pink-600 hover:to-yellow-500 min-w-wull hover:text-white bg-white text-pink-600 w-12 h-12  transform hover:-translate-y-3 rounded-full duration-500 "
+    className: " border-2 hover:border-0 border-pink-500 bg-gradient-to-b text-2xl hover:from-indigo-600 hover:via-pink-600 hover:to-yellow-500 min-w-wull hover:text-white bg-white text-pink-600 w-12 h-12  transform hover:-translate-y-3 rounded-full duration-500 mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_5__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_7__.faInstagram
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     id: "twitter",
-    class: "bg-white  transform hover:-translate-y-3  border-2 w-12 h-12 rounded-full duration-500 text-blue-400 border-blue-400 hover:bg-blue-400 hover:text-white text-2xl"
+    className: "bg-white  transform hover:-translate-y-3  border-2 w-12 h-12 rounded-full duration-500 text-blue-400 border-blue-400 hover:bg-blue-400 hover:text-white text-2xl mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_5__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_7__.faTwitter
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     id: "youtube",
-    class: "bg-white transform hover:-translate-y-3  border-2 w-12 h-12 rounded-full duration-500 text-red-500 border-red-500 hover:bg-red-500 hover:text-white text-2xl"
+    className: "bg-white transform hover:-translate-y-3  border-2 w-12 h-12 rounded-full duration-500 text-red-500 border-red-500 hover:bg-red-500 hover:text-white text-2xl mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_5__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_7__.faYoutube
   }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
@@ -18907,7 +20954,7 @@ const Sections = ({
     // The preview cookie is deleted when state.prevPath exists on location
     if (location.state && location.state.prevPath) {
       removeCookie("strapiPreview", {
-        path: '/',
+        path: "/",
         secure: "development" === "production",
         sameSite: "Strict"
       });
@@ -19078,12 +21125,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_markdown__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-markdown */ "./node_modules/react-markdown/lib/react-markdown.js");
-/* harmony import */ var _elements_button_link__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../elements/button-link */ "./src/components/elements/button-link.js");
-/* harmony import */ var _image__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../image */ "./src/components/image.js");
+/* harmony import */ var _public_page_data_sq_d_2152550311_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../public/page-data/sq/d/2152550311.json */ "./public/page-data/sq/d/2152550311.json");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _elements_button_link__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../elements/button-link */ "./src/components/elements/button-link.js");
 /* harmony import */ var _utils_button__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/utils/button */ "./src/utils/button.js");
+/* harmony import */ var gatsby_plugin_image__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! gatsby-plugin-image */ "./node_modules/gatsby-plugin-image/dist/gatsby-image.module.js");
+/* harmony import */ var gbimage_bridge__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! gbimage-bridge */ "./node_modules/gbimage-bridge/dist/index.modern.js");
+
+
 
 
 
@@ -19093,30 +21143,33 @@ __webpack_require__.r(__webpack_exports__);
 const Hero = ({
   data
 }) => {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("main", {
-    className: "container flex flex-col md:flex-row items-center justify-between py-12"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "flex-1 sm:pr-8"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
-    className: "uppercase tracking-wide font-semibold"
-  }, data.label), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", {
-    className: "title mt-2 sm:mt-0 mb-4 sm:mb-2"
-  }, data.title), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
-    className: "text-xl mb-6"
-  }, data.description), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "flex flex-row flex-wrap gap-4"
-  }, data.buttons.map(button => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_elements_button_link__WEBPACK_IMPORTED_MODULE_1__.default, {
-    button: button,
-    appearance: (0,_utils_button__WEBPACK_IMPORTED_MODULE_3__.getButtonAppearance)(button.type, "light"),
-    key: button.id
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "text-base md:text-sm mt-4 sm:mt-3 rich-text-hero"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, {
-    source: data.smallTextWithLink
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_image__WEBPACK_IMPORTED_MODULE_2__.default, {
-    media: data.picture,
-    className: "flex-shrink-0 object-contain w-full md:w-6/12 mt-6 md:mt-0"
-  }));
+  const image = _public_page_data_sq_d_2152550311_json__WEBPACK_IMPORTED_MODULE_0__.data;
+  console.log(image);
+  console.log(data);
+  const pluginImage = (0,gatsby_plugin_image__WEBPACK_IMPORTED_MODULE_5__.getImage)(image.file);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement((react__WEBPACK_IMPORTED_MODULE_1___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(gbimage_bridge__WEBPACK_IMPORTED_MODULE_4__.BgImage, {
+    image: pluginImage,
+    className: "w-full min-h-screen"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+    className: "h-screen bg-opacity-50 bg-black flex items-center justify-center",
+    style: {
+      background: "rgba(0,0,0,0.5)"
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+    className: "mx-2 text-center container"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("h4", {
+    className: "font-body text-gray-100 text-3xl xs:text-4xl md:text-4xl mb-8"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("span", {
+    className: "text-white"
+  }, data.title)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("h1", {
+    className: "font-display text-gray-100 text-4xl xs:text-5xl md:text-5xl mb-8"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("span", {
+    className: "text-white"
+  }, data.label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", {
+    className: "font-body text-gray-100 text-2xl xs:text-3xl md:text-2xl"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("span", {
+    className: "text-white"
+  }, data.description))))));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Hero);
@@ -19697,7 +21750,10 @@ const DynamicPage = ({
       localizations
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_sections__WEBPACK_IMPORTED_MODULE_2__.default, {
-    sections: contentSections
+    sections: contentSections,
+    pageContext: { ...pageContext,
+      localizations
+    }
   })));
 };
 
@@ -20726,6 +22782,35 @@ var shouldNavigate = function shouldNavigate(event) {
 
 /***/ }),
 
+/***/ "./node_modules/gbimage-bridge/dist/index.modern.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/gbimage-bridge/dist/index.modern.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "BgImage": () => (/* binding */ f),
+/* harmony export */   "convertSingleBgImage": () => (/* binding */ s),
+/* harmony export */   "convertToBgImage": () => (/* binding */ d),
+/* harmony export */   "getAllExtraSrcSets": () => (/* binding */ o),
+/* harmony export */   "getAspectRatio": () => (/* binding */ u),
+/* harmony export */   "getBgImageType": () => (/* binding */ n),
+/* harmony export */   "getPlaceholder": () => (/* binding */ a),
+/* harmony export */   "getSingleImage": () => (/* binding */ i),
+/* harmony export */   "getSrc": () => (/* binding */ c),
+/* harmony export */   "isString": () => (/* binding */ t)
+/* harmony export */ });
+/* harmony import */ var gatsby_background_image__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gatsby-background-image */ "./node_modules/gatsby-background-image/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+function l(){return(l=Object.assign||function(r){for(var e=1;e<arguments.length;e++){var l=arguments[e];for(var t in l)Object.prototype.hasOwnProperty.call(l,t)&&(r[t]=l[t])}return r}).apply(this,arguments)}const t=r=>"[object String]"===Object.prototype.toString.call(r),n=r=>"fixed"===r.layout?"fixed":"fluid",i=r=>{let e;for(e=0;e<r.length;e++)if(!t(r[e]))return r[e];return null},u=r=>r.width/r.height,a=r=>{var e,l,t,n;return r.placeholder?null!=(e=r.placeholder)&&null!=(l=e.fallback)&&l.includes("base64")?{base64:null==(t=r.placeholder)?void 0:t.fallback}:{tracedSVG:null==(n=r.placeholder)?void 0:n.fallback}:{}},c=r=>{if(r.srcSet){var e;const l=[...r.srcSet.matchAll(/(?:([^"'\s,]+)\s*(?:\s+\d+[wx])(?:,\s*)?)/gm)],t=r.sizes.replace("px",""),n=l.filter(r=>(null==r?void 0:r[0].includes("100w"))||(null==r?void 0:r[0].includes("1x"))||(null==r?void 0:r[0].includes(`${t}w`)));return(null==n||null==(e=n[0])?void 0:e[1])||""}return""},o=r=>{var e,l,t;return null!=(e=r.images)&&e.sources&&Array.isArray(null==(l=r.images)?void 0:l.sources)?null==(t=r.images)?void 0:t.sources.reduce((r,e)=>{var l;const t=(null==e||null==(l=e.type)?void 0:l.split("/")[1])||"",n=(null==t?void 0:t.charAt(0).toUpperCase())+t.slice(1),i=`srcSet${n}`,u=`src${n}`;return n&&(!(i in r)&&null!=e&&e.srcSet&&(r[i]=e.srcSet),!(u in r)&&null!=e&&e.srcSet&&(r[u]=c(e))),r},{}):{}},s=r=>{if(r&&r.layout){const e={},t=n(r),i=u(r),c=a(r),s=o(r);return e[t]=l({},r.images.fallback,s,c,"fluid"===t?{aspectRatio:i}:{},"fixed"===t?{width:r.width,height:r.height}:{}),e}return null};function d(r){if(r){if(Array.isArray(r)){const[e,u]=(r=>{const e=i(r);if(e){const i=n(e),u=r.map(r=>{if(t(r))return r;const e=s(r);return l({},e&&e[i],null!=r&&r.media?{media:r.media}:{})});return[i,u]}return[]})(r);return e?{[e]:u}:null}return s(r)}return null}const f=t=>{const{image:n,children:i}=t,u=function(r,e){if(null==r)return{};var l,t,n={},i=Object.keys(r);for(t=0;t<i.length;t++)e.indexOf(l=i[t])>=0||(n[l]=r[l]);return n}(t,["image","children"]),a=n&&d(n);return a?react__WEBPACK_IMPORTED_MODULE_1___default().createElement(gatsby_background_image__WEBPACK_IMPORTED_MODULE_0__.default,l({},a,u),i):react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div",null,i)};
+//# sourceMappingURL=index.modern.js.map
+
+
+/***/ }),
+
 /***/ "./node_modules/has-flag/index.js":
 /*!****************************************!*\
   !*** ./node_modules/has-flag/index.js ***!
@@ -20887,6 +22972,154 @@ function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
 }
 
 module.exports = hoistNonReactStatics;
+
+
+/***/ }),
+
+/***/ "./node_modules/html-attributes/lib/html-attributes.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/html-attributes/lib/html-attributes.js ***!
+  \*************************************************************/
+/***/ ((module) => {
+
+"use strict";
+/*!
+ * html-attributes
+ * https://github.com/alexmingoia/html-attributes
+ */
+
+
+
+/**
+ * @module html-attributes
+ */
+
+module.exports = {
+  "abbr": "abbr",
+  "accept": "accept",
+  "acceptCharset": "accept-charset",
+  "accessKey": "accesskey",
+  "action": "action",
+  "allowFullScreen": "allowfullscreen",
+  "allowTransparency": "allowtransparency",
+  "alt": "alt",
+  "async": "async",
+  "autoComplete": "autocomplete",
+  "autoFocus": "autofocus",
+  "autoPlay": "autoplay",
+  "cellPadding": "cellpadding",
+  "cellSpacing": "cellspacing",
+  "challenge": "challenge",
+  "charset": "charset",
+  "checked": "checked",
+  "cite": "cite",
+  "class": "class",
+  "className": "class",
+  "cols": "cols",
+  "colSpan": "colspan",
+  "command": "command",
+  "content": "content",
+  "contentEditable": "contenteditable",
+  "contextMenu": "contextmenu",
+  "controls": "controls",
+  "coords": "coords",
+  "crossOrigin": "crossorigin",
+  "data": "data",
+  "dateTime": "datetime",
+  "default": "default",
+  "defer": "defer",
+  "dir": "dir",
+  "disabled": "disabled",
+  "download": "download",
+  "draggable": "draggable",
+  "dropzone": "dropzone",
+  "encType": "enctype",
+  "for": "for",
+  "form": "form",
+  "formAction": "formaction",
+  "formEncType": "formenctype",
+  "formMethod": "formmethod",
+  "formNoValidate": "formnovalidate",
+  "formTarget": "formtarget",
+  "frameBorder": "frameBorder",
+  "headers": "headers",
+  "height": "height",
+  "hidden": "hidden",
+  "high": "high",
+  "href": "href",
+  "hrefLang": "hreflang",
+  "htmlFor": "for",
+  "httpEquiv": "http-equiv",
+  "icon": "icon",
+  "id": "id",
+  "inputMode": "inputmode",
+  "isMap": "ismap",
+  "itemId": "itemid",
+  "itemProp": "itemprop",
+  "itemRef": "itemref",
+  "itemScope": "itemscope",
+  "itemType": "itemtype",
+  "kind": "kind",
+  "label": "label",
+  "lang": "lang",
+  "list": "list",
+  "loop": "loop",
+  "manifest": "manifest",
+  "max": "max",
+  "maxLength": "maxlength",
+  "media": "media",
+  "mediaGroup": "mediagroup",
+  "method": "method",
+  "min": "min",
+  "minLength": "minlength",
+  "multiple": "multiple",
+  "muted": "muted",
+  "name": "name",
+  "noValidate": "novalidate",
+  "open": "open",
+  "optimum": "optimum",
+  "pattern": "pattern",
+  "ping": "ping",
+  "placeholder": "placeholder",
+  "poster": "poster",
+  "preload": "preload",
+  "radioGroup": "radiogroup",
+  "readOnly": "readonly",
+  "rel": "rel",
+  "required": "required",
+  "role": "role",
+  "rows": "rows",
+  "rowSpan": "rowspan",
+  "sandbox": "sandbox",
+  "scope": "scope",
+  "scoped": "scoped",
+  "scrolling": "scrolling",
+  "seamless": "seamless",
+  "selected": "selected",
+  "shape": "shape",
+  "size": "size",
+  "sizes": "sizes",
+  "sortable": "sortable",
+  "span": "span",
+  "spellCheck": "spellcheck",
+  "src": "src",
+  "srcDoc": "srcdoc",
+  "srcSet": "srcset",
+  "start": "start",
+  "step": "step",
+  "style": "style",
+  "tabIndex": "tabindex",
+  "target": "target",
+  "title": "title",
+  "translate": "translate",
+  "type": "type",
+  "typeMustMatch": "typemustmatch",
+  "useMap": "usemap",
+  "value": "value",
+  "width": "width",
+  "wmode": "wmode",
+  "wrap": "wrap"
+};
 
 
 /***/ }),
@@ -57718,6 +59951,977 @@ function mutate(options) {
 
 /***/ }),
 
+/***/ "./node_modules/short-uuid/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/short-uuid/index.js ***!
+  \******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/**
+ * Created by Samuel on 6/4/2016.
+ * Simple wrapper functions to produce shorter UUIDs for cookies, maybe everything?
+ */
+
+const { v4: uuidv4 } = __webpack_require__(/*! uuid */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/index.js");
+const anyBase = __webpack_require__(/*! any-base */ "./node_modules/any-base/index.js");
+
+const flickrBase58 = '123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
+const cookieBase90 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&'()*+-./:<=>?@[]^_`{|}~";
+
+const baseOptions = {
+  consistentLength: true,
+};
+
+// A default generator, instantiated only if used.
+let toFlickr;
+
+/**
+ * Takes a UUID, strips the dashes, and translates.
+ * @param {string} longId
+ * @param {function(string)} translator
+ * @param {Object} [paddingParams]
+ * @returns {string}
+ */
+const shortenUUID = (longId, translator, paddingParams) => {
+  const translated = translator(longId.toLowerCase().replace(/-/g, ''));
+
+  if (!paddingParams || !paddingParams.consistentLength) return translated;
+
+  return translated.padStart(
+    paddingParams.shortIdLength,
+    paddingParams.paddingChar,
+  );
+};
+
+/**
+ * Translate back to hex and turn back into UUID format, with dashes
+ * @param {string} shortId
+ * @param {function(string)} translator
+ * @returns {string}
+ */
+const enlargeUUID = (shortId, translator) => {
+  const uu1 = translator(shortId).padStart(32, '0');
+
+  // Join the zero padding and the UUID and then slice it up with match
+  const m = uu1.match(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/);
+
+  // Accumulate the matches and join them.
+  return [m[1], m[2], m[3], m[4], m[5]].join('-');
+};
+
+// Calculate length for the shortened ID
+const getShortIdLength = (alphabetLength) => (
+  Math.ceil(Math.log(2 ** 128) / Math.log(alphabetLength)));
+
+module.exports = (() => {
+  /**
+   * @param {string} toAlphabet - Defaults to flickrBase58 if not provided
+   * @param {Object} [options]
+   *
+   * @returns {{new: (function()),
+   *  uuid: (function()),
+   *  fromUUID: (function(string)),
+   *  toUUID: (function(string)),
+   *  alphabet: (string)}}
+   */
+  const makeConvertor = (toAlphabet, options) => {
+    // Default to Flickr 58
+    const useAlphabet = toAlphabet || flickrBase58;
+
+    // Default to baseOptions
+    const selectedOptions = { ...baseOptions, ...options };
+
+    // Check alphabet for duplicate entries
+    if ([...new Set(Array.from(useAlphabet))].length !== useAlphabet.length) {
+      throw new Error('The provided Alphabet has duplicate characters resulting in unreliable results');
+    }
+
+    const shortIdLength = getShortIdLength(useAlphabet.length);
+
+    // Padding Params
+    const paddingParams = {
+      shortIdLength,
+      consistentLength: selectedOptions.consistentLength,
+      paddingChar: useAlphabet[0],
+    };
+
+    // UUIDs are in hex, so we translate to and from.
+    const fromHex = anyBase(anyBase.HEX, useAlphabet);
+    const toHex = anyBase(useAlphabet, anyBase.HEX);
+    const generate = () => shortenUUID(uuidv4(), fromHex, paddingParams);
+
+    const translator = {
+      new: generate,
+      generate,
+      uuid: uuidv4,
+      fromUUID: (uuid) => shortenUUID(uuid, fromHex, paddingParams),
+      toUUID: (shortUuid) => enlargeUUID(shortUuid, toHex),
+      alphabet: useAlphabet,
+      maxLength: shortIdLength,
+    };
+
+    Object.freeze(translator);
+
+    return translator;
+  };
+
+  // Expose the constants for other purposes.
+  makeConvertor.constants = {
+    flickrBase58,
+    cookieBase90,
+  };
+
+  // Expose the generic v4 UUID generator for convenience
+  makeConvertor.uuid = uuidv4;
+
+  // Provide a generic generator
+  makeConvertor.generate = () => {
+    if (!toFlickr) {
+      // Generate on first use;
+      toFlickr = makeConvertor(flickrBase58).generate;
+    }
+    return toFlickr();
+  };
+
+  return makeConvertor;
+})();
+
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/index.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "v1": () => (/* reexport safe */ _v1_js__WEBPACK_IMPORTED_MODULE_0__.default),
+/* harmony export */   "v3": () => (/* reexport safe */ _v3_js__WEBPACK_IMPORTED_MODULE_1__.default),
+/* harmony export */   "v4": () => (/* reexport safe */ _v4_js__WEBPACK_IMPORTED_MODULE_2__.default),
+/* harmony export */   "v5": () => (/* reexport safe */ _v5_js__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "NIL": () => (/* reexport safe */ _nil_js__WEBPACK_IMPORTED_MODULE_4__.default),
+/* harmony export */   "version": () => (/* reexport safe */ _version_js__WEBPACK_IMPORTED_MODULE_5__.default),
+/* harmony export */   "validate": () => (/* reexport safe */ _validate_js__WEBPACK_IMPORTED_MODULE_6__.default),
+/* harmony export */   "stringify": () => (/* reexport safe */ _stringify_js__WEBPACK_IMPORTED_MODULE_7__.default),
+/* harmony export */   "parse": () => (/* reexport safe */ _parse_js__WEBPACK_IMPORTED_MODULE_8__.default)
+/* harmony export */ });
+/* harmony import */ var _v1_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./v1.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v1.js");
+/* harmony import */ var _v3_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./v3.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v3.js");
+/* harmony import */ var _v4_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./v4.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v4.js");
+/* harmony import */ var _v5_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./v5.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v5.js");
+/* harmony import */ var _nil_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./nil.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/nil.js");
+/* harmony import */ var _version_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./version.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/version.js");
+/* harmony import */ var _validate_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./validate.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/validate.js");
+/* harmony import */ var _stringify_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./stringify.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/stringify.js");
+/* harmony import */ var _parse_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./parse.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/parse.js");
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/md5.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/md5.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! crypto */ "crypto");
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(crypto__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function md5(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === 'string') {
+    bytes = Buffer.from(bytes, 'utf8');
+  }
+
+  return crypto__WEBPACK_IMPORTED_MODULE_0___default().createHash('md5').update(bytes).digest();
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (md5);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/nil.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/nil.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ('00000000-0000-0000-0000-000000000000');
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/parse.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/parse.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _validate_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./validate.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/validate.js");
+
+
+function parse(uuid) {
+  if (!(0,_validate_js__WEBPACK_IMPORTED_MODULE_0__.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  let v;
+  const arr = new Uint8Array(16); // Parse ########-....-....-....-............
+
+  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+  arr[1] = v >>> 16 & 0xff;
+  arr[2] = v >>> 8 & 0xff;
+  arr[3] = v & 0xff; // Parse ........-####-....-....-............
+
+  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+  arr[5] = v & 0xff; // Parse ........-....-####-....-............
+
+  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+  arr[7] = v & 0xff; // Parse ........-....-....-####-............
+
+  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+  arr[9] = v & 0xff; // Parse ........-....-....-....-############
+  // (Use "/" to avoid 32-bit truncation when bit-shifting high-order bytes)
+
+  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000 & 0xff;
+  arr[11] = v / 0x100000000 & 0xff;
+  arr[12] = v >>> 24 & 0xff;
+  arr[13] = v >>> 16 & 0xff;
+  arr[14] = v >>> 8 & 0xff;
+  arr[15] = v & 0xff;
+  return arr;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (parse);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/regex.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/regex.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/rng.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/rng.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ rng)
+/* harmony export */ });
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! crypto */ "crypto");
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(crypto__WEBPACK_IMPORTED_MODULE_0__);
+
+const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
+
+let poolPtr = rnds8Pool.length;
+function rng() {
+  if (poolPtr > rnds8Pool.length - 16) {
+    crypto__WEBPACK_IMPORTED_MODULE_0___default().randomFillSync(rnds8Pool);
+    poolPtr = 0;
+  }
+
+  return rnds8Pool.slice(poolPtr, poolPtr += 16);
+}
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/sha1.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/sha1.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! crypto */ "crypto");
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(crypto__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function sha1(bytes) {
+  if (Array.isArray(bytes)) {
+    bytes = Buffer.from(bytes);
+  } else if (typeof bytes === 'string') {
+    bytes = Buffer.from(bytes, 'utf8');
+  }
+
+  return crypto__WEBPACK_IMPORTED_MODULE_0___default().createHash('sha1').update(bytes).digest();
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (sha1);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/stringify.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/stringify.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _validate_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./validate.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/validate.js");
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+
+const byteToHex = [];
+
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify(arr, offset = 0) {
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!(0,_validate_js__WEBPACK_IMPORTED_MODULE_0__.default)(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (stringify);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v1.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v1.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _rng_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./rng.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/rng.js");
+/* harmony import */ var _stringify_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stringify.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/stringify.js");
+
+ // **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+let _nodeId;
+
+let _clockseq; // Previous uuid creation time
+
+
+let _lastMSecs = 0;
+let _lastNSecs = 0; // See https://github.com/uuidjs/uuid for API details
+
+function v1(options, buf, offset) {
+  let i = buf && offset || 0;
+  const b = buf || new Array(16);
+  options = options || {};
+  let node = options.node || _nodeId;
+  let clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq; // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+
+  if (node == null || clockseq == null) {
+    const seedBytes = options.random || (options.rng || _rng_js__WEBPACK_IMPORTED_MODULE_0__.default)();
+
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [seedBytes[0] | 0x01, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
+    }
+
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  } // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+
+
+  let msecs = options.msecs !== undefined ? options.msecs : Date.now(); // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+
+  let nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1; // Time since last uuid creation (in msecs)
+
+  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000; // Per 4.2.1.2, Bump clockseq on clock regression
+
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  } // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+
+
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  } // Per 4.2.1.2 Throw error if too many uuids are requested
+
+
+  if (nsecs >= 10000) {
+    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq; // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+
+  msecs += 12219292800000; // `time_low`
+
+  const tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff; // `time_mid`
+
+  const tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff; // `time_high_and_version`
+
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+
+  b[i++] = tmh >>> 16 & 0xff; // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+
+  b[i++] = clockseq >>> 8 | 0x80; // `clock_seq_low`
+
+  b[i++] = clockseq & 0xff; // `node`
+
+  for (let n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf || (0,_stringify_js__WEBPACK_IMPORTED_MODULE_1__.default)(b);
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (v1);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v3.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v3.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _v35_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./v35.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v35.js");
+/* harmony import */ var _md5_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./md5.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/md5.js");
+
+
+const v3 = (0,_v35_js__WEBPACK_IMPORTED_MODULE_0__.default)('v3', 0x30, _md5_js__WEBPACK_IMPORTED_MODULE_1__.default);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (v3);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v35.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v35.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DNS": () => (/* binding */ DNS),
+/* harmony export */   "URL": () => (/* binding */ URL),
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _stringify_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stringify.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/stringify.js");
+/* harmony import */ var _parse_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./parse.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/parse.js");
+
+
+
+function stringToBytes(str) {
+  str = unescape(encodeURIComponent(str)); // UTF8 escape
+
+  const bytes = [];
+
+  for (let i = 0; i < str.length; ++i) {
+    bytes.push(str.charCodeAt(i));
+  }
+
+  return bytes;
+}
+
+const DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+const URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name, version, hashfunc) {
+  function generateUUID(value, namespace, buf, offset) {
+    if (typeof value === 'string') {
+      value = stringToBytes(value);
+    }
+
+    if (typeof namespace === 'string') {
+      namespace = (0,_parse_js__WEBPACK_IMPORTED_MODULE_0__.default)(namespace);
+    }
+
+    if (namespace.length !== 16) {
+      throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
+    } // Compute hash of namespace and value, Per 4.3
+    // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
+    // hashfunc([...namespace, ... value])`
+
+
+    let bytes = new Uint8Array(16 + value.length);
+    bytes.set(namespace);
+    bytes.set(value, namespace.length);
+    bytes = hashfunc(bytes);
+    bytes[6] = bytes[6] & 0x0f | version;
+    bytes[8] = bytes[8] & 0x3f | 0x80;
+
+    if (buf) {
+      offset = offset || 0;
+
+      for (let i = 0; i < 16; ++i) {
+        buf[offset + i] = bytes[i];
+      }
+
+      return buf;
+    }
+
+    return (0,_stringify_js__WEBPACK_IMPORTED_MODULE_1__.default)(bytes);
+  } // Function#name is not settable on some platforms (#270)
+
+
+  try {
+    generateUUID.name = name; // eslint-disable-next-line no-empty
+  } catch (err) {} // For CommonJS default export support
+
+
+  generateUUID.DNS = DNS;
+  generateUUID.URL = URL;
+  return generateUUID;
+}
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v4.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v4.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _rng_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./rng.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/rng.js");
+/* harmony import */ var _stringify_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stringify.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/stringify.js");
+
+
+
+function v4(options, buf, offset) {
+  options = options || {};
+  const rnds = options.random || (options.rng || _rng_js__WEBPACK_IMPORTED_MODULE_0__.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return (0,_stringify_js__WEBPACK_IMPORTED_MODULE_1__.default)(rnds);
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (v4);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v5.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v5.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _v35_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./v35.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/v35.js");
+/* harmony import */ var _sha1_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sha1.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/sha1.js");
+
+
+const v5 = (0,_v35_js__WEBPACK_IMPORTED_MODULE_0__.default)('v5', 0x50, _sha1_js__WEBPACK_IMPORTED_MODULE_1__.default);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (v5);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/validate.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/validate.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./regex.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/regex.js");
+
+
+function validate(uuid) {
+  return typeof uuid === 'string' && _regex_js__WEBPACK_IMPORTED_MODULE_0__.default.test(uuid);
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (validate);
+
+/***/ }),
+
+/***/ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/version.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/short-uuid/node_modules/uuid/dist/esm-node/version.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _validate_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./validate.js */ "./node_modules/short-uuid/node_modules/uuid/dist/esm-node/validate.js");
+
+
+function version(uuid) {
+  if (!(0,_validate_js__WEBPACK_IMPORTED_MODULE_0__.default)(uuid)) {
+    throw TypeError('Invalid UUID');
+  }
+
+  return parseInt(uuid.substr(14, 1), 16);
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (version);
+
+/***/ }),
+
+/***/ "./node_modules/sort-media-queries/lib/index.js":
+/*!******************************************************!*\
+  !*** ./node_modules/sort-media-queries/lib/index.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var extend = __webpack_require__(/*! xtend */ "./node_modules/xtend/immutable.js");
+var mqTypes = ['blank','all','minWidth','minHeight','maxWidth','maxHeight','print'];
+
+/**
+ * @param  {Array} rules
+ * @param  {String} type
+ * @param  {String} prop
+ *
+ * @return {Boolean}
+ */
+function itemsValid ( rules, type, prop ) {
+	var flag = true;
+	for ( var i = 0, rulesLength = rules.length; i < rulesLength; i++ ) {
+		if ( typeof(rules[i]) !== type || ( prop && !rules[i].hasOwnProperty(prop) ) ) {
+			flag = false;
+			break;
+		}
+	}
+	return flag;
+}
+
+/**
+ * @param  {Array} rules
+ * @param  {String} type
+ * @param  {String} prop
+ *
+ * @return {Boolean}
+ */
+function allValid ( rules, type, prop ) {
+	if (
+		!rules || !rules.length || typeof(rules) === 'string'
+	) {
+		return 'none';
+	}
+	if (
+		(type === 'object' && (!prop || typeof(prop) !== 'string')) ||
+		!itemsValid(rules, type, prop)
+	) {
+		return 'some';
+	}
+	return 'all';
+}
+
+/**
+ * Normalize between array with strings and array with objects
+ *
+ * @param  {Array} rules
+ * @param  {String} type
+ * @param  {String} prop
+ *
+ * @return {Object}
+ */
+function prepareRules ( rules, type, prop ) {
+	var collection = [];
+	var o = {};
+	for ( var i = 0, rulesLength = rules.length; i < rulesLength; i++ ) {
+		if ( type === 'string' ) {
+			o = extend({}, {
+				__media: rules[i]
+			});
+		} else {
+			o = extend({}, rules[i]);
+			o.__media = rules[i][prop];
+		}
+		collection.push(o);
+	}
+	return collection;
+}
+
+/**
+ * @param  {Boolean} isMax
+ *
+ * @return {Function}
+ */
+function determineSortOrder ( isMax ) {
+
+	/**
+	 * Determine sort order based on provided arguments
+	 *
+	 * @param  {Object} a
+	 * @param  {Object} b
+	 *
+	 * @return {Integer}
+	 */
+	return function ( a, b ) {
+
+		var sortValA = a.sortVal;
+		var sortValB = b.sortVal;
+		var ruleA = a.item.__media;
+		var ruleB = b.item.__media;
+		isMax = typeof(isMax) !== 'undefined' ? isMax : false;
+
+		// Consider print for sorting if sortVals are equal
+		if ( sortValA === sortValB ) {
+			if ( ruleA.match(/print/) ) {
+				// a contains print and should be sorted after b
+				return 1;
+			}
+			if ( ruleB.match(/print/) ) {
+				// b contains print and should be sorted after a
+				return -1;
+			}
+		}
+
+		// Return descending sort order for max-(width|height) media queries
+		if ( isMax ) {
+			return sortValB - sortValA;
+		}
+
+		// Return ascending sort order
+		return sortValA - sortValB;
+	};
+}
+
+/**
+ * @return {Object}
+ */
+function createCollection () {
+	var mqCollection = {};
+	for ( var i = 0, mqTypesLength = mqTypes.length; i < mqTypesLength; i++ ) {
+		mqCollection[mqTypes[i]] = [];
+	}
+	return mqCollection;
+}
+
+/**
+ * @param {Object} collection
+ * @param {Array} rules
+ *
+ * @return {Object}
+ */
+function addRulesToCollection ( collection, rules ) {
+
+	// Sort media queries by kind, this is needed to output them in the right order
+	for ( var i = 0, rulesLength = rules.length; i < rulesLength; i++ ) {
+
+		var item = rules[i];
+		var rule = item.__media;
+		var collectionType = 'blank';
+		var valMatch = rule.match(/\d+/g);
+
+		if ( rule.match(/min-width/) ) {
+			collectionType = 'minWidth';
+		} else if ( rule.match(/min-height/) ) {
+			collectionType = 'minHeight';
+		} else if ( rule.match(/max-width/) ) {
+			collectionType = 'maxWidth';
+		} else if ( rule.match(/max-height/) ) {
+			collectionType = 'maxHeight';
+		} else if ( rule.match(/print/) ) {
+			collectionType = 'print';
+		} else if ( rule.match(/all/) ) {
+			collectionType = 'all';
+		}
+
+		collection[collectionType].push({
+			item: item,
+			sortVal: valMatch ? valMatch[0] : 0
+		});
+
+	}
+	return collection;
+}
+
+/**
+ * @param  {Object} collection
+ *
+ * @return {Object}
+ */
+function sortCollection ( collection ) {
+	var sorter;
+	for ( var collectionType in collection ) {
+		if ( collection.hasOwnProperty(collectionType) ) {
+			sorter = determineSortOrder(false);
+			if ( collectionType === 'maxWidth' || collectionType === 'maxHeight' ) {
+				sorter = determineSortOrder(true);
+			}
+			collection[collectionType].sort(sorter);
+		}
+	}
+	return collection;
+}
+
+/**
+ * @param  {Object} collection
+ * @param  {String} type
+ * @param  {String} prop
+ *
+ * @return {Array}
+ */
+function transformCollection ( collection, type, prop ) {
+	var transformed = [];
+	var collectionItem;
+
+	function iterateCollectionItem ( collectionItem ) {
+		var resultVal;
+		for ( var i = 0, typeLength = collectionItem.length; i < typeLength; i++ ) {
+			if ( type === 'string' ) {
+				resultVal = collectionItem[i].item.__media;
+			} else {
+				resultVal = collectionItem[i].item;
+				delete resultVal.__media;
+			}
+			transformed.push(resultVal);
+		}
+	}
+
+	for ( var i = 0, mqTypesLength = mqTypes.length; i < mqTypesLength; i++ ) {
+		iterateCollectionItem(collection[mqTypes[i]]);
+	}
+
+	return transformed;
+}
+
+/**
+ * @param  {Array} rules
+ * @param  {String} type
+ * @param  {String} prop
+ *
+ * @return {Array}
+ */
+function sortInit ( rules, type, prop ) {
+
+	switch ( allValid(rules, type, prop) ) {
+		case 'none':
+			return [];
+		case 'some':
+			return rules;
+	}
+
+	var collection = createCollection();
+	rules = prepareRules(rules, type, prop);
+	addRulesToCollection(collection, rules);
+	sortCollection(collection);
+	return transformCollection(collection, type, prop);
+}
+
+/**
+ * @param  {Array} rules
+ * @param  {String} prop
+ *
+ * @return {Array}
+ */
+module.exports = function ( rules, prop ) {
+	if ( rules ) {
+		if ( prop ) {
+			return sortInit(rules, 'object', prop);
+		}
+		return sortInit(rules, 'string');
+	}
+	return [];
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/space-separated-tokens/index.js":
 /*!******************************************************!*\
   !*** ./node_modules/space-separated-tokens/index.js ***!
@@ -62234,6 +65438,35 @@ function init(open, close) {
 
 /***/ }),
 
+/***/ "./node_modules/xtend/immutable.js":
+/*!*****************************************!*\
+  !*** ./node_modules/xtend/immutable.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/yup/es/Condition.js":
 /*!******************************************!*\
   !*** ./node_modules/yup/es/Condition.js ***!
@@ -65022,6 +68255,17 @@ function toArray(value) {
 
 /***/ }),
 
+/***/ "./public/page-data/sq/d/2152550311.json":
+/*!***********************************************!*\
+  !*** ./public/page-data/sq/d/2152550311.json ***!
+  \***********************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"data":{"file":{"childImageSharp":{"gatsbyImageData":{"layout":"constrained","placeholder":{"fallback":"data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAMCBAX/xAAWAQEBAQAAAAAAAAAAAAAAAAABAAL/2gAMAwEAAhADEAAAAcW/FGgEkf/EABoQAAMBAAMAAAAAAAAAAAAAAAECAwAREiH/2gAIAQEAAQUC4IyCLBk9mxOqOtN//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAGhAAAwADAQAAAAAAAAAAAAAAAAEhEBIiMf/aAAgBAQAGPwKo6hDV1DS8x//EABsQAQADAAMBAAAAAAAAAAAAAAEAESExQVFh/9oACAEBAAE/Ibm1HscAs8V1BNBIiL8HYWf8RWf/2gAMAwEAAgADAAAAEKA//8QAFhEAAwAAAAAAAAAAAAAAAAAAARAx/9oACAEDAQE/EIV//8QAFhEAAwAAAAAAAAAAAAAAAAAAARAx/9oACAECAQE/EKF//8QAGxABAAICAwAAAAAAAAAAAAAAAQARITFxkaH/2gAIAQEAAT8QAMo0KjimK104mYv02Q8CoUg9lgJJQWKctz//2Q=="},"images":{"fallback":{"src":"/static/48a2971169f69626b552ba5f5dc23fe1/a764f/universe.jpg","srcSet":"/static/48a2971169f69626b552ba5f5dc23fe1/fb67e/universe.jpg 480w,\\n/static/48a2971169f69626b552ba5f5dc23fe1/3059d/universe.jpg 960w,\\n/static/48a2971169f69626b552ba5f5dc23fe1/a764f/universe.jpg 1920w","sizes":"(min-width: 1920px) 1920px, 100vw"},"sources":[{"srcSet":"/static/48a2971169f69626b552ba5f5dc23fe1/65a54/universe.avif 480w,\\n/static/48a2971169f69626b552ba5f5dc23fe1/da9f1/universe.avif 960w,\\n/static/48a2971169f69626b552ba5f5dc23fe1/031aa/universe.avif 1920w","type":"image/avif","sizes":"(min-width: 1920px) 1920px, 100vw"},{"srcSet":"/static/48a2971169f69626b552ba5f5dc23fe1/3a3a2/universe.webp 480w,\\n/static/48a2971169f69626b552ba5f5dc23fe1/bde8a/universe.webp 960w,\\n/static/48a2971169f69626b552ba5f5dc23fe1/c512e/universe.webp 1920w","type":"image/webp","sizes":"(min-width: 1920px) 1920px, 100vw"}]},"width":1920,"height":1080}}}}}');
+
+/***/ }),
+
 /***/ "react-dom/server":
 /*!*******************************************************************************************************!*\
   !*** external "/Users/frank/Desktop/website_inspiraliving/frontend/node_modules/react-dom/server.js" ***!
@@ -65041,6 +68285,17 @@ module.exports = require("/Users/frank/Desktop/website_inspiraliving/frontend/no
 
 "use strict";
 module.exports = require("/Users/frank/Desktop/website_inspiraliving/frontend/node_modules/react/index.js");;
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("crypto");;
 
 /***/ }),
 

@@ -47,7 +47,8 @@ const PreviewModeBanner = ({ location }) => {
 // Display a section individually
 const Section = ({ sectionData }) => {
   // Prepare the component
-  const SectionComponent = sectionComponents[sectionData.strapi_component || sectionData.__component]
+  const SectionComponent =
+    sectionComponents[sectionData.strapi_component || sectionData.__component]
 
   if (!SectionComponent) {
     // No matching component for this page section
@@ -69,21 +70,20 @@ const Sections = ({ sections }) => {
     // The preview cookie is deleted when state.prevPath exists on location
     if (location.state && location.state.prevPath) {
       removeCookie("strapiPreview", {
-        path: '/',
+        path: "/",
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
       })
     }
   }, [location, removeCookie])
 
-  const previewModeIsEnabled = process.env.GATSBY_PREVIEW_SECRET &&
+  const previewModeIsEnabled =
+    process.env.GATSBY_PREVIEW_SECRET &&
     cookies.strapiPreview === process.env.GATSBY_PREVIEW_SECRET
-  
+
   return (
     <div className="flex flex-col">
-      {previewModeIsEnabled && (
-        <PreviewModeBanner location={location} />
-      )}
+      {previewModeIsEnabled && <PreviewModeBanner location={location} />}
       {sections.map((section, i) => (
         <Section
           sectionData={section}

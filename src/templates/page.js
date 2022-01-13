@@ -12,7 +12,10 @@ const DynamicPage = ({ data, pageContext }) => {
     <>
       <SEO seo={metadata} global={global} />
       <Layout global={global} pageContext={{ ...pageContext, localizations }}>
-        <Sections sections={contentSections} />
+        <Sections
+          sections={contentSections}
+          pageContext={{ ...pageContext, localizations }}
+        />
       </Layout>
     </>
   )
