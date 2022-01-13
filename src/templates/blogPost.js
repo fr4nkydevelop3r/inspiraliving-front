@@ -2,7 +2,7 @@ import React from "react"
 import { graphql } from "gatsby"
 import Layout from "@/components/layout"
 import SEO from "@/components/seo"
-import parse from "html-react-parser"
+import parse, { domToReact, attributesToProps } from "html-react-parser"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import { Link, navigate } from "gatsby"
 
@@ -18,33 +18,33 @@ const BlogPost = ({ data, pageContext }) => {
   } = data.strapiArticle
   const global = data.strapiGlobal
 
-  console.log(slug)
-  console.log(description)
-  console.log(content)
-  console.log(localizations)
-  console.log(image)
-
   const metadata = {
     metaDescription: "This is our Blog",
     metaTitle: "Blog/InspiraLiving",
+  }
+
+  const options = {
+    replace: domNode => {
+      if (domNode.name === "figure") {
+        return (
+          <figure id="image-article" style={{ display: "flex" }}>
+            {domToReact(domNode.children)}
+          </figure>
+        )
+      }
+    },
   }
 
   return (
     <>
       <SEO seo={metadata} global={global} />
       <Layout global={global} pageContext={{ ...pageContext, localizations }}>
-        <main className="mt-10 mb-16">
+        <main className="md:mt-10 mb-16">
           <div
             className="mb-4 md:mb-0 w-full max-w-screen-md mx-auto relative"
             style={{ height: "24em" }}
           >
-            <div
-              className="absolute left-0 bottom-0 w-full h-full z-10"
-              style={{
-                "background-image":
-                  "linear-gradient(180deg,transparent,rgba(0,0,0,.7))",
-              }}
-            ></div>
+            <div className="absolute left-0 bottom-0 w-full h-full z-10 image-container-blog-post"></div>
 
             <GatsbyImage
               image={getImage(image[0].localFile)}
@@ -76,7 +76,7 @@ const BlogPost = ({ data, pageContext }) => {
           </div>
 
           <div className="px-4 lg:px-0 mt-12 text-gray-700 max-w-screen-md mx-auto text-lg leading-relaxed">
-            {parse(content)}
+            {parse(content, options)}
           </div>
         </main>
       </Layout>

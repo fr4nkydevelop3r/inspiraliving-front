@@ -204,7 +204,13 @@ const Category = ({ data, pageContext }) => {
                   ))}
                 </div>
               ) : (
-                <p>No hay articulos</p>
+                <div className="h-96">
+                  <p className="text-gray-500">
+                    {pageContext.locale === "en"
+                      ? "No articles for this category"
+                      : "No hay articulos en esta categoría"}
+                  </p>
+                </div>
               )}
             </div>
           </div>

@@ -37,7 +37,7 @@ const MobileNavMenu = ({ navbar, closeSelf }) => {
                 className="block w-full p-2 text-primary-600"
               >
                 <CustomLink link={navLink}>
-                  <div className="hover:text-gray-900  flex flex-row justify-between items-center">
+                  <div className="hover:text-gray-300  flex flex-row justify-between items-center">
                     <span>{navLink.text}</span>
                     <MdChevronRight className="h-8 w-auto" />
                   </div>
