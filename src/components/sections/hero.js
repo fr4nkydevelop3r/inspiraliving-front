@@ -18,7 +18,6 @@ const Hero = ({ data }) => {
   `)
 
   console.log(image)
-  console.log(data)
 
   const pluginImage = getImage(image.file)
 
