@@ -7,7 +7,7 @@ import { useStaticQuery, graphql } from "gatsby"
 import { BgImage } from "gbimage-bridge"
 
 const Hero = ({ data }) => {
-  const image = useStaticQuery(graphql`
+  /* const image = useStaticQuery(graphql`
     query backgroundImage {
       file(relativePath: { eq: "universe.jpg" }) {
         childImageSharp {
@@ -19,7 +19,7 @@ const Hero = ({ data }) => {
 
   console.log(image)
 
-  const pluginImage = getImage(image.file)
+  const pluginImage = getImage(image.file)*/
 
   return (
     <>
