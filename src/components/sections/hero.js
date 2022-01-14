@@ -23,7 +23,7 @@ const Hero = ({ data }) => {
 
   return (
     <>
-      {/*<BgImage image={pluginImage} className="w-full min-h-screen">
+      <BgImage image={pluginImage} className="w-full min-h-screen">
         <div
           className="h-screen bg-opacity-50 bg-black flex items-center justify-center"
           style={{ background: "rgba(0,0,0,0.5)" }}
@@ -40,7 +40,7 @@ const Hero = ({ data }) => {
             </p>
           </div>
         </div>
-      </BgImage>*/}
+      </BgImage>
       <div>Hello world</div>
     </>
   )
