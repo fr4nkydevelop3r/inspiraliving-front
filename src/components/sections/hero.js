@@ -17,7 +17,7 @@ const Hero = ({ data }) => {
     }
   `)
 
-  console.log(image)
+  console.log(data)
 
   const pluginImage = getImage(image.file)
 
@@ -41,7 +41,6 @@ const Hero = ({ data }) => {
           </div>
         </div>
       </BgImage>
-      <div>Hello world</div>
     </>
   )
 }
