@@ -10,12 +10,12 @@ module.exports = {
     PRESERVE_FILE_DOWNLOAD_CACHE: true,
   },
   siteMetadata: {
-    title: `Strapi+Gatsby Corporate Starter`,
+    title: `InSpiraLiving`,
     siteUrl: `${
       process.env.GATSBY_STRAPI_URL || "https://strapi-4jqq.onrender.com"
     }`,
-    description: `A Strapi+Gatsby corporate starter`,
-    author: `Strapi`,
+    description: `The vision of a new Space-Time organization system for a global civilization in balance with Earth's ecosystems and harmony among peoples.`,
+    author: `InSpiraLiving`,
     languages: { defaultLocale: "en", locales: ["en", "es"] },
   },
   plugins: [
@@ -39,7 +39,7 @@ module.exports = {
         background_color: `#663399`,
         theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+        icon: `src/images/spira-icon.png`, // This path is relative to the root of the site.
       },
     },
     {
