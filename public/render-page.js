@@ -15546,13 +15546,13 @@ var plugins = [{
     "background_color": "#663399",
     "theme_color": "#663399",
     "display": "minimal-ui",
-    "icon": "src/images/gatsby-icon.png",
+    "icon": "src/images/spiral-icon.png",
     "legacy": true,
     "theme_color_in_head": true,
     "cache_busting_mode": "query",
     "crossOrigin": "anonymous",
     "include_favicon": true,
-    "cacheDigest": "4a9773549091c227cd2eb82ccd9c5e3a"
+    "cacheDigest": "be02ace089d7445915250f168a9ff91b"
   }
 }]; // During bootstrap, we write requires at top of this file which looks like:
 // var plugins = [
@@ -20374,6 +20374,7 @@ const Footer = ({
 
     if (suscribe) {
       if (suscribe.result === "success") {
+        setEmail("");
         console.log(suscribe);
         sweetalert2__WEBPACK_IMPORTED_MODULE_7__.default.fire("Awesome!", "Welcome to InSpiraLiving!", "success");
         (0,gatsby__WEBPACK_IMPORTED_MODULE_5__.navigate)("/");
@@ -20393,22 +20394,26 @@ const Footer = ({
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "flex justify-center mb-6"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
-    id: "facebook",
+    type: "button",
+    onClick: () => window.open("https://www.facebook.com/Inspiralivingworld/", "_blank"),
     className: "bg-white  sticky duration-500 border-2 border-blue-600 fixed  w-12 transform hover:-translate-y-3   h-12 text-2xl rounded-full hover:bg-blue-600 hover:text-white text-blue-600 mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_6__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_9__.faFacebook
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
-    id: "instagram",
+    type: "button",
+    onClick: () => window.open("https://www.instagram.com/inspiralivingworld/", "_blank"),
     className: " border-2 hover:border-0 border-pink-500 bg-gradient-to-b text-2xl hover:from-indigo-600 hover:via-pink-600 hover:to-yellow-500 min-w-wull hover:text-white bg-white text-pink-600 w-12 h-12  transform hover:-translate-y-3 rounded-full duration-500 mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_6__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_9__.faInstagram
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
-    id: "twitter",
+    type: "button",
+    onClick: () => window.open("https://twitter.com/InSpiralLiving", "_blank"),
     className: "bg-white  transform hover:-translate-y-3  border-2 w-12 h-12 rounded-full duration-500 text-blue-400 border-blue-400 hover:bg-blue-400 hover:text-white text-2xl mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_6__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_9__.faTwitter
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
-    id: "youtube",
+    type: "button",
+    onClick: () => window.open("https://www.youtube.com/channel/UCJzp26RDkCaEJmDFbrjKEjg?view_as=subscriber", "_blank"),
     className: "bg-white transform hover:-translate-y-3  border-2 w-12 h-12 rounded-full duration-500 text-red-500 border-red-500 hover:bg-red-500 hover:text-white text-2xl mr-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_6__.FontAwesomeIcon, {
     icon: _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_9__.faYoutube
@@ -20426,6 +20431,7 @@ const Footer = ({
     "aria-label": "Email address",
     type: "email",
     required: true,
+    value: email,
     className: " form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none ",
     onChange: event => setEmail(event.target.value),
     placeholder: "Email address"
