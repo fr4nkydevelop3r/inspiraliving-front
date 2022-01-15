@@ -15,7 +15,7 @@ module.exports = {
         body: ['"Roboto Condensed"', "sans-serif"],
       },
       colors: {
-        primary: colors.purple,
+        primary: colors.indigo,
         matrix: "#00FF41",
         silver: "c8cccf",
         white: "#ffffff",

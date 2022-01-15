@@ -1,6 +1,6 @@
 import React from "react"
 import { useState } from "react"
-import { Link } from "gatsby"
+import { Link, navigate } from "gatsby"
 import PropTypes from "prop-types"
 import { MdMenu } from "react-icons/md"
 import MobileNavMenu from "./mobile-nav-menu"

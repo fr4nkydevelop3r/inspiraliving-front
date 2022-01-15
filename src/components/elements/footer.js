@@ -1,9 +1,9 @@
-import React from "react"
+import React, { useState } from "react"
 import Image from "../image"
 import PropTypes from "prop-types"
 import { linkPropTypes, mediaPropTypes } from "@/utils/types"
 import ButtonLink from "./button-link"
-
+import { navigate } from "gatsby"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faFacebook,
@@ -11,10 +11,30 @@ import {
   faTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons"
+import Swal from "sweetalert2"
 
-import { getButtonAppearance } from "@/utils/button"
+import { handleSuscription } from "../../utils/suscribe-user"
 
 const Footer = ({ footer }) => {
+  const [email, setEmail] = useState("")
+
+  const suscribeUser = async e => {
+    e.preventDefault()
+    const suscribe = await handleSuscription(email)
+    if (suscribe) {
+      if (suscribe.result === "success") {
+        setEmail("")
+        console.log(suscribe)
+        Swal.fire("Awesome!", "Welcome to InSpiraLiving!", "success")
+        navigate("/")
+      } else {
+        Swal.fire("Ups!", suscribe.msg, "error")
+        console.log(suscribe.msg)
+      }
+    } else {
+      Swal.fire("Ups!", "Something went wrong", "error")
+    }
+  }
   return (
     <footer className="text-center bg-black text-white">
       <div className="container px-6 pt-6">
@@ -53,7 +73,7 @@ const Footer = ({ footer }) => {
         </div>
 
         <div>
-          <form action="">
+          <form onSubmit={suscribeUser}>
             <div className="grid md:grid-cols-3 gird-cols-1 gap-4 flex justify-center items-center">
               <div className="md:ml-auto md:mb-6">
                 <p className="">
@@ -63,7 +83,10 @@ const Footer = ({ footer }) => {
 
               <div className="md:mb-6">
                 <input
-                  type="text"
+                  aria-label="Email address"
+                  type="email"
+                  required
+                  value={email}
                   className="
                 form-control
                 block
@@ -81,13 +104,16 @@ const Footer = ({ footer }) => {
                 m-0
                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
               "
-                  id="exampleFormControlInput1"
+                  onChange={event => setEmail(event.target.value)}
                   placeholder="Email address"
                 />
               </div>
 
               <div className="md:mr-auto mb-6">
-                <button className="block w-full lg:w-auto text-center uppercase tracking-wide font-semibold text-base md:text-sm border-2 rounded-md px-6 py-2 text-primary-600 border-primary-600">
+                <button
+                  type="submit"
+                  className="block w-full lg:w-auto text-center uppercase tracking-wide font-semibold text-base md:text-sm border-2 rounded-md px-6 py-2 text-primary-600 border-primary-600"
+                >
                   {footer.button.text}
                 </button>
               </div>

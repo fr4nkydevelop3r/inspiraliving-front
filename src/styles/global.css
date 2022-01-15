@@ -22,6 +22,23 @@
       break-inside: avoid;
     }
   }
+
+  @media screen and (min-width: 768px) {
+    .h-800 {
+      height: 800px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .h-800 {
+      height: 1200px;
+    }
+  }
+  @media screen and (min-width: 1200px) {
+    .h-800 {
+      height: 650px;
+    }
+  }
 }
 
 html {
@@ -103,4 +120,9 @@ blockquote:before {
 }
 blockquote p {
   display: inline;
+}
+
+.my-swal {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
 }

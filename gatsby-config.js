@@ -42,6 +42,21 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    {
+      resolve: "gatsby-plugin-nprogress",
+      options: {
+        showSpinner: true,
+        color: `tomato`,
+      },
+    },
+    {
+      resolve: "gatsby-plugin-mailchimp",
+      options: {
+        endpoint:
+          "https://inspiralivingworld.us20.list-manage.com/subscribe/post?u=3b7be2acbd0cc8a8920b8d002&amp;id=3913650550", // string; add your MC list endpoint here; see instructions below
+        timeout: 3500, // number; the amount of time, in milliseconds, that you want to allow mailchimp to respond to your request before timing out. defaults to 3500
+      },
+    },
     "gatsby-plugin-postcss",
     `gatsby-plugin-gatsby-cloud`,
     {
